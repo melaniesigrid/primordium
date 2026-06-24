@@ -2,7 +2,7 @@
 
 # PRIMORDIUM
 
-**A falsifiable, browser-native experiment in predator–prey coevolution.**
+**A controlled, browser-native experiment in predator–prey coevolution — one that can come back null.**
 
 Two species of neural network — one hunting, one fleeing — evolve against each other under the law of the Red Queen. Brains have evolvable topology, recurrence, and within-lifetime plasticity. None of it is designed; all of it emerges from mutation and selection.
 

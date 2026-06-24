@@ -38,7 +38,7 @@ button.act:disabled{opacity:.4;cursor:not-allowed}
 button.act:disabled:hover{background:transparent;color:var(--phosphor)}
 input[type=range]{accent-color:var(--phosphor);height:3px;width:100%}
 h3.sec{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
-#tab-arena{display:grid;grid-template-columns:1fr 320px}
+#tab-arena.active{display:grid;grid-template-columns:1fr 320px}
 .arena-stage{position:relative;border-right:1px solid var(--line);background:var(--panel)}
 #arena{display:block;width:100%;height:100%}
 .arena-stage .tag{position:absolute;font-size:10px;letter-spacing:.1em;background:rgba(7,11,8,.72);border:1px solid var(--line);padding:4px 8px;pointer-events:none}
@@ -50,7 +50,7 @@ h3.sec{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform
 .outcome{font-size:12px;line-height:1.7;border:1px solid var(--line);padding:10px 12px;background:rgba(0,0,0,.2)}
 .outcome b{color:var(--phosphor)} .outcome .c{color:var(--blood)} .outcome .s{color:var(--phosphor)}
 .intransitive{color:var(--amber);line-height:1.6;font-style:italic;font-family:var(--serif);font-size:13px;min-height:18px}
-#tab-lab{display:grid;grid-template-columns:300px 1fr;height:100%}
+#tab-lab.active{display:grid;grid-template-columns:300px 1fr;height:100%}
 .lab-ctrl{background:var(--panel2);border-right:1px solid var(--line);padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 .lab-main{overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:20px}
 .field{display:flex;flex-direction:column;gap:5px;font-size:11px}
@@ -78,7 +78,7 @@ h3.sec{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform
 .statline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:11.5px;margin-top:10px;color:#8a917f}
 .statline b{color:var(--amber);font-weight:500}
 .placeholder{color:#5d6657;font-style:italic;font-family:var(--serif);font-size:15px;padding:40px 0;text-align:center}
-#tab-brain{display:grid;grid-template-columns:1fr 300px}
+#tab-brain.active{display:grid;grid-template-columns:1fr 300px}
 .brain-stage{border-right:1px solid var(--line);background:var(--panel);position:relative}
 #brainCanvas{display:block;width:100%;height:100%}
 .brain-side{background:var(--panel2);padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
@@ -118,7 +118,7 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
 <div class="app">
   <header>
     <h1>PRIMOR<em>DIVM</em></h1>
-    <div class="sub">a falsifiable experiment in predator–prey coevolution · recurrent, plastic, topology-evolving brains</div>
+    <div class="sub">a controlled experiment in predator–prey coevolution · recurrent, plastic, topology-evolving brains</div>
     <div class="tabs">
       <button class="tab active" data-tab="arena">Arena</button>
       <button class="tab" data-tab="lab">Laboratory</button>
@@ -210,7 +210,7 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
       <div class="mono-wrap">
         <div class="eyebrow">A field monograph · methods &amp; honest limits</div>
         <h2>Does predator–prey coevolution <em>cycle</em>?</h2>
-        <div class="deck">A self-contained, reproducible experiment — not a discovery. It implements established mechanisms to test one falsifiable question, with a control, replicates, and a verdict computed from the data rather than asserted.</div>
+        <div class="deck">A self-contained, reproducible experiment — not a discovery. It implements established mechanisms to test one clear prediction, with a control, replicates, and a verdict computed from the data rather than asserted — including a verdict of "no effect."</div>
 
         <div class="liveres" id="monoResult">Run the experiment in the Laboratory tab to populate the live result here.</div>
 

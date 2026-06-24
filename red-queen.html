@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Red Queen Hypothesis — a field guide for biology students</title>
+<meta name="description" content="A student-friendly explanation of the Red Queen hypothesis: why coevolving species must keep adapting just to survive, the evidence from sex, parasites and the fossil record, and how to test it.">
+<meta property="og:title" content="The Red Queen Hypothesis — a field guide">
+<meta property="og:description" content="Why species must keep running to stay in the same place. A clear, illustrated primer on Van Valen's Red Queen for biology students.">
+<meta property="og:type" content="article">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070b08; --panel:#0c120e; --panel2:#101712; --line:#1d2a20;
+  --phosphor:#8df2ae; --phosphor-dim:#3e6a4d; --amber:#e8b34b; --blood:#e8604f;
+  --bone:#d8d2c2; --serif:'Cormorant Garamond',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--bone);font-family:var(--mono);position:relative;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:80;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:81;
+  background:radial-gradient(ellipse at 50% 30%,transparent 60%,rgba(0,0,0,.55) 100%)}
+a{color:var(--phosphor);text-decoration:none}
+a:hover{color:var(--bone)}
+.wrap{max-width:880px;margin:0 auto;padding:0 28px}
+.eyebrow{font-size:10px;letter-spacing:.32em;color:var(--phosphor-dim);text-transform:uppercase}
+.amber{color:var(--amber)} .phos{color:var(--phosphor)} .blood{color:var(--blood)}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:18px;
+  padding:14px 28px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(13,19,15,.96),rgba(7,11,8,.86));backdrop-filter:blur(6px)}
+nav .brand{font-family:var(--serif);font-weight:600;letter-spacing:.2em;font-size:18px;color:var(--bone)}
+nav .brand em{color:var(--phosphor);font-style:normal}
+nav .links{margin-left:auto;display:flex;gap:20px;align-items:center;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+nav .links a{color:var(--phosphor-dim)} nav .links a:hover{color:var(--phosphor)}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  background:transparent;color:var(--phosphor);border:1px solid var(--phosphor-dim);
+  padding:8px 16px;cursor:pointer;transition:all .15s;display:inline-block}
+.btn:hover{background:var(--phosphor);color:var(--ink)}
+.btn.solid{background:var(--phosphor);color:var(--ink);border-color:var(--phosphor)}
+.btn.solid:hover{background:var(--bone);border-color:var(--bone)}
+@media(max-width:640px){nav .links a.hideSm{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:84px 0 60px;text-align:center;position:relative}
+.hero h1{font-family:var(--serif);font-weight:600;letter-spacing:.04em;font-size:clamp(38px,8vw,76px);color:var(--bone);line-height:1.0}
+.hero h1 em{color:var(--phosphor);font-style:italic}
+.hero .tag{font-family:var(--serif);font-style:italic;font-size:clamp(16px,2.4vw,22px);color:#8a917f;margin:18px auto 4px;max-width:600px;line-height:1.5}
+.hero .sub{font-size:11px;letter-spacing:.12em;color:var(--phosphor-dim);text-transform:uppercase;margin-top:14px}
+.scanline{height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent);margin:0 auto;max-width:520px;opacity:.5}
+
+/* ---------- sections ---------- */
+section{padding:50px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,36px);letter-spacing:.02em;color:var(--bone);line-height:1.08;margin:6px 0 4px}
+h2 em{color:var(--phosphor);font-style:italic}
+.lead{font-family:var(--serif);font-style:italic;font-size:16px;color:#8a917f;margin:10px 0 26px;max-width:660px}
+p{font-size:13.5px;line-height:1.9;color:#c2bcab;margin-bottom:14px;max-width:680px}
+p b{color:var(--phosphor);font-weight:500}
+code{font-family:var(--mono);font-size:12px;color:var(--amber);background:rgba(232,179,75,.08);padding:1px 5px;border:1px solid #3a3219}
+.term{color:var(--amber);font-style:normal}
+ul{margin:0 0 14px 0;max-width:680px;list-style:none}
+li{font-size:13px;line-height:1.85;color:#c2bcab;padding-left:22px;text-indent:-12px;margin-bottom:8px}
+li::before{content:"→ ";color:var(--phosphor-dim)}
+
+/* ---------- definition strip ---------- */
+.def{border:1px solid var(--line);background:var(--panel);padding:22px 24px;margin-top:8px}
+.def .k{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--phosphor-dim);margin-bottom:8px}
+.def p{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1.5;color:var(--bone);margin:0;max-width:none}
+
+/* ---------- cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px}
+.card{border:1px solid var(--line);background:var(--panel);padding:20px 20px 22px;position:relative;transition:border-color .2s}
+.card:hover{border-color:var(--phosphor-dim)}
+.card .n{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--phosphor-dim)}
+.card h3{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:6px 0 10px}
+.card p{font-size:12.5px;line-height:1.75;color:#b0aa9a;margin:0;max-width:none}
+
+/* ---------- flow ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin-top:24px;border:1px solid var(--line);background:var(--panel)}
+.flow .step{flex:1;min-width:150px;padding:18px 16px;border-right:1px solid var(--line);position:relative}
+.flow .step:last-child{border-right:none}
+.flow .step .k{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--phosphor-dim)}
+.flow .step .v{font-family:var(--serif);font-size:18px;color:var(--bone);margin:6px 0 6px}
+.flow .step p{font-size:11.5px;line-height:1.6;color:#8a917f;margin:0;max-width:none}
+@media(max-width:620px){.flow .step{border-right:none;border-bottom:1px solid var(--line)}.flow .step:last-child{border-bottom:none}}
+
+/* ---------- two-column compare ---------- */
+.views{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+@media(max-width:640px){.views{grid-template-columns:1fr}}
+.view{border:1px solid var(--line);background:var(--panel2);padding:18px 20px}
+.view .tab{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);background:var(--phosphor);display:inline-block;padding:3px 9px;margin-bottom:10px}
+.view .tab.cold{background:var(--amber)}
+.view h3{font-family:var(--serif);font-size:20px;color:var(--bone);margin-bottom:6px;font-weight:600}
+.view p{font-size:12.5px;line-height:1.7;color:#a9a393;margin:0;max-width:none}
+
+/* ---------- callout / quote ---------- */
+.caveat{border-left:2px solid var(--phosphor-dim);padding:16px 0 16px 20px;margin:24px 0 0;background:rgba(141,242,174,.04)}
+.caveat p{color:#a9c4af;font-size:12.5px;margin:0;max-width:none}.caveat p+p{margin-top:10px}
+.quote{font-family:var(--serif);font-style:italic;font-size:clamp(20px,3.4vw,30px);color:var(--bone);line-height:1.35;max-width:720px;margin:8px auto;text-align:center}
+.quote em{color:var(--phosphor);font-style:italic}
+.quote .by{display:block;font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--phosphor-dim);margin-top:18px}
+
+/* ---------- check-yourself ---------- */
+.quiz{border:1px solid var(--line);background:var(--panel);margin-top:18px}
+.quiz details{border-bottom:1px solid var(--line)}
+.quiz details:last-child{border-bottom:none}
+.quiz summary{cursor:pointer;padding:15px 20px;font-size:13px;color:var(--bone);list-style:none;transition:background .15s}
+.quiz summary::-webkit-details-marker{display:none}
+.quiz summary:hover{background:var(--panel2)}
+.quiz summary::before{content:"? ";color:var(--amber);font-weight:600}
+.quiz details[open] summary{color:var(--phosphor)}
+.quiz .ans{padding:0 20px 16px 20px;font-size:12.5px;line-height:1.8;color:#a9a393}
+
+/* ---------- refs ---------- */
+.refs{margin-top:14px;font-size:11.5px;line-height:2;color:#7a8470;max-width:760px}
+.refs div{padding-left:22px;text-indent:-22px}.refs b{color:var(--bone);font-weight:500}
+
+/* ---------- final cta ---------- */
+.final{text-align:center;padding:70px 0}
+.final h2{margin-bottom:8px}
+.final .btn{margin-top:26px;padding:14px 32px;font-size:13px}
+
+footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:11px;letter-spacing:.06em;color:#5d6657}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+footer a{color:var(--phosphor-dim)}footer a:hover{color:var(--phosphor)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="brand" href="index.html">PRIMOR<em>DIVM</em></a>
+  <span class="links">
+    <a href="#idea" class="hideSm">The idea</a>
+    <a href="#why" class="hideSm">Why it happens</a>
+    <a href="#evidence" class="hideSm">Evidence</a>
+    <a href="#test" class="hideSm">Test it</a>
+    <a class="btn solid" href="lab.html">Enter the lab →</a>
+  </span>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">a field guide for biology students</div>
+    <h1>The <em>Red Queen</em> Hypothesis</h1>
+    <p class="tag">Why a species can be perfectly adapted today and extinct tomorrow — even though nothing about its environment seems to have changed.</p>
+    <div class="sub">coevolution · arms races · the maintenance of sex · Van Valen, 1973</div>
+  </div>
+</header>
+
+<div class="scanline"></div>
+
+<!-- THE IDEA -->
+<section id="idea">
+  <div class="wrap">
+    <div class="eyebrow">the core idea</div>
+    <h2>Running hard just to <em>stand still</em></h2>
+    <p class="lead">The name comes from Lewis Carroll. In <i>Through the Looking-Glass</i>, Alice runs beside the Red Queen but stays in the same spot — “it takes all the running you can do, to keep in the same place.”</p>
+    <p>In 1973 the evolutionary biologist <b>Leigh Van Valen</b> borrowed that image to describe something he saw in the fossil record. For most species, the chance of going extinct in a given interval stays roughly <i>constant</i> over their entire history — it doesn't fall just because a lineage has survived a long time and looks well-adapted. That was a puzzle: if a species keeps improving, shouldn't it get safer over time?</p>
+    <p>Van Valen's answer is the Red Queen. A species is never evolving against a fixed backdrop. It is evolving against <b>other living things</b> — predators, prey, parasites, competitors — and those things are evolving back. Every adaptation you gain becomes the new problem your rivals must solve, and their solutions become your new problem. The environment that matters most is <i>itself alive and changing</i>, so continual adaptation buys you survival, not progress.</p>
+    <div class="def">
+      <div class="k">The hypothesis, in one sentence</div>
+      <p>In a community of coevolving species, each must keep adapting continuously simply to maintain its current fitness — because the biological environment it competes in is always changing in response.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<section id="why">
+  <div class="wrap">
+    <div class="eyebrow">why it happens</div>
+    <h2>Coevolution is a <em>moving target</em></h2>
+    <p class="lead">The key shift in thinking: stop treating "the environment" as the weather and the landscape, and start treating other organisms as the environment.</p>
+    <p>Compare two kinds of pressure a species can face. One stays put; the other fights back. The Red Queen is about the second kind.</p>
+    <div class="views">
+      <div class="view">
+        <span class="tab cold">Abiotic · stays still</span>
+        <h3>A fixed challenge</h3>
+        <p>Cold winters, a dry climate, a rocky shore. Once a species evolves a good-enough solution — thick fur, deep roots — the problem doesn't escalate. The mountain does not get taller because you learned to climb it. Adaptation can reach a stable optimum.</p>
+      </div>
+      <div class="view">
+        <span class="tab">Biotic · fights back</span>
+        <h3>A coevolving challenge</h3>
+        <p>A faster predator, a sneakier parasite, a competitor for the same food. The moment you adapt, selection pushes <i>them</i> to counter-adapt. The target moves every generation. There is no final optimum to settle on — only the next round.</p>
+      </div>
+    </div>
+    <p style="margin-top:26px">This is why biologists call it an <b>evolutionary arms race</b>. Predators evolve speed; prey evolve sharper senses and quicker escapes; predators evolve better targeting. Each side's "win" resets the contest. Crucially, the two sides can keep changing forever while the <i>outcome</i> — say, the fraction of hunts that succeed — barely moves. Lots of evolutionary running; the same place on the scoreboard.</p>
+    <div class="caveat">
+      <p><b>Watch the vocabulary.</b> "Red Queen dynamics" can mean two related things. (1) The <span class="term">macroevolutionary</span> version Van Valen proposed: a roughly constant extinction risk driven by biotic competition. (2) The <span class="term">microevolutionary</span> version: ongoing, often cyclical coevolution between interacting species — especially hosts and parasites. Same metaphor, different scales. Be clear which one you mean in an exam answer.</p>
+    </div>
+  </div>
+</section>
+
+<!-- THE FAMOUS CONSEQUENCE: SEX -->
+<section id="sex">
+  <div class="wrap">
+    <div class="eyebrow">the famous consequence</div>
+    <h2>Why bother with <em>sex?</em></h2>
+    <p class="lead">The Red Queen gives biology's best-known answer to a genuinely hard question: why do so many species reproduce sexually when it looks so costly?</p>
+    <p>Sex is expensive. An asexual female passes on <b>100%</b> of her genes to each offspring and needs no mate; a sexual female passes on only <b>50%</b> and must find a partner. This is the famous <span class="term">two-fold cost of sex</span>. All else equal, an asexual lineage should out-reproduce a sexual one and take over. Yet sex is everywhere. Why?</p>
+    <p>The Red Queen answer: <b>parasites</b>. Parasites evolve fast and adapt to whatever host genotype is currently most common — the abundant target is the most profitable one to specialise on. An asexual lineage makes clones, so once parasites crack its genotype, the whole lineage is exposed at once. Sexual reproduction <b>shuffles genes every generation</b>, constantly producing rare combinations parasites aren't yet adapted to. Sex doesn't make better offspring on average — it makes <i>unpredictable</i> offspring, and unpredictability is exactly what stays ahead of a coevolving enemy.</p>
+    <div class="quote" style="margin-top:30px">
+      Sex is the host's way of <em>never holding still</em> long enough to be caught.
+      <span class="by">— the Red Queen account of recombination</span>
+    </div>
+  </div>
+</section>
+
+<!-- EVIDENCE -->
+<section id="evidence">
+  <div class="wrap">
+    <div class="eyebrow">how we know — the evidence</div>
+    <h2>Three places the pattern <em>shows up</em></h2>
+    <p class="lead">A hypothesis earns its keep through evidence. Here are the classic lines biology students are expected to know.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="n">i.</div>
+        <h3>New Zealand snails</h3>
+        <p>In lakes where the snail <i>Potamopyrgus</i> is heavily attacked by trematode worms, sexual snails dominate. Where parasites are rare, cheap asexual clones win. Sex pays exactly where the Red Queen predicts — under parasite pressure. (Lively, 1987.)</p>
+      </div>
+      <div class="card">
+        <div class="n">ii.</div>
+        <h3>Frozen parasites</h3>
+        <p>Daphnia (water fleas) and their bacterial parasites can be revived from layered pond sediment. Parasites are best at infecting hosts from <i>their own era</i> — beating the past, losing to the future. That time-lagged tracking is the Red Queen caught in the act. (Decaestecker et al., 2007.)</p>
+      </div>
+      <div class="card">
+        <div class="n">iii.</div>
+        <h3>The fossil record</h3>
+        <p>Van Valen's original "Law of Extinction": across many groups, the probability of extinction stays roughly constant through a lineage's lifetime. Age confers no safety — consistent with relentless biotic pressure rather than a march toward perfection.</p>
+      </div>
+    </div>
+    <div class="caveat">
+      <p><b>Stay honest about it.</b> The Red Queen is powerful but not the whole story. Sex probably persists for several overlapping reasons (it also purges harmful mutations and speeds adaptation to new conditions). And in the fossil record, a "Court Jester" view stresses that physical upheavals — climate shifts, asteroid impacts, volcanism — drive much large-scale turnover. Most biologists now see biotic (Red Queen) and abiotic (Court Jester) forces as acting together at different scales. A good answer names both.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT'S TESTED -->
+<section id="test">
+  <div class="wrap">
+    <div class="eyebrow">turning a metaphor into a test</div>
+    <h2>From story to <em>falsifiable prediction</em></h2>
+    <p class="lead">A metaphor is not science until it makes a prediction that could fail. Here is how researchers pin the Red Queen down.</p>
+    <div class="flow">
+      <div class="step"><div class="k">01 · predict</div><div class="v">State it</div><p>If two species coevolve, each should track the other over time — adaptations on one side should be followed by counter-adaptations on the other.</p></div>
+      <div class="step"><div class="k">02 · control</div><div class="v">Freeze one side</div><p>Compare against a control where the rival is held fixed. If the "race" needs a live opponent, the frozen-target run should look different.</p></div>
+      <div class="step"><div class="k">03 · measure</div><div class="v">Look for cycling</div><p>Plot how a champion from one generation fares against opponents from every other generation — a <span class="term">CIAO plot</span>. Cycling, not a steady climb, is the signature.</p></div>
+      <div class="step"><div class="k">04 · judge</div><div class="v">Allow "no"</div><p>Coevolution often fails to cycle — it can stall into disengagement. A null result is a real finding, not a broken test.</p></div>
+    </div>
+    <p style="margin-top:26px">You can run exactly this experiment yourself. <b>Primordium</b> is a browser-based artificial-life lab where two species of neural network — one predator, one prey — coevolve in real time. It includes a frozen-target control, replicate runs, and a permutation test that prints an honest verdict, so you can watch a Red Queen race (or watch it fail to start) and inspect the data behind it.</p>
+    <div style="text-align:center;margin-top:24px">
+      <a class="btn solid" href="lab.html" style="padding:13px 28px;font-size:12px">▶ See the Red Queen run in the lab</a>
+    </div>
+  </div>
+</section>
+
+<!-- CHECK YOURSELF -->
+<section id="check">
+  <div class="wrap">
+    <div class="eyebrow">check yourself</div>
+    <h2>Questions to <em>test your grip</em></h2>
+    <p class="lead">Try to answer before you open each one. These are the kinds of distinctions exams and seminars probe.</p>
+    <div class="quiz">
+      <details>
+        <summary>Why doesn't being well-adapted make a species safer over time?</summary>
+        <div class="ans">Because the things it's adapted <i>to</i> are mostly other organisms that keep evolving. Each adaptation it gains pressures rivals to counter-adapt, so the challenge is regenerated every generation. Fitness is maintained, not banked — there's no permanent lead to build.</div>
+      </details>
+      <details>
+        <summary>What's the difference between an abiotic and a biotic selection pressure here?</summary>
+        <div class="ans">An abiotic pressure (cold, drought) is a fixed challenge — adapt once and it stays solved. A biotic pressure (a predator, a parasite) fights back: it evolves in response to you, so the target keeps moving. The Red Queen is specifically about biotic pressures.</div>
+      </details>
+      <details>
+        <summary>How does the Red Queen explain the persistence of sexual reproduction?</summary>
+        <div class="ans">Sex carries a two-fold cost but constantly shuffles genes, generating rare genotypes. Fast-evolving parasites adapt to the <i>common</i> host genotypes, so the rare combinations sex produces stay one step ahead. The advantage of unpredictability outweighs the cost — wherever parasite pressure is strong.</div>
+      </details>
+      <details>
+        <summary>What would falsify (or fail to support) the hypothesis in an experiment?</summary>
+        <div class="ans">If a species coevolving against a live, responding rival showed no more ongoing adaptation than one racing a frozen control — i.e., no tracking, no cycling, no time-lagged advantage — there'd be nothing for the Red Queen to explain. That's why honest tests must allow a "no effect" outcome.</div>
+      </details>
+      <details>
+        <summary>How does the "Court Jester" view relate to the Red Queen?</summary>
+        <div class="ans">It's the complement, not a rival. Court Jester emphasises abiotic, physically-driven change (climate, tectonics, impacts) as the engine of large-scale macroevolution, while the Red Queen emphasises biotic interactions. Current thinking: biotic forces dominate at small scales and short timeframes, abiotic forces at large ones.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- GLOSSARY / REFS -->
+<section id="more">
+  <div class="wrap">
+    <div class="eyebrow">key terms &amp; sources</div>
+    <h2>Words to <em>own</em></h2>
+    <ul>
+      <li><span class="term">Coevolution</span> — reciprocal evolutionary change in two or more interacting species, each acting as a selective force on the other.</li>
+      <li><span class="term">Evolutionary arms race</span> — escalating adaptation and counter-adaptation between coevolving antagonists (e.g. predator–prey, host–parasite).</li>
+      <li><span class="term">Two-fold cost of sex</span> — the reproductive disadvantage of sexual vs asexual reproduction, since sexual females transmit only half their genes per offspring.</li>
+      <li><span class="term">Negative frequency-dependent selection</span> — the engine behind host–parasite Red Queen cycles: whatever genotype is common becomes the most-targeted, so rare genotypes are favoured.</li>
+      <li><span class="term">CIAO plot</span> — "Current Individual vs Ancestral Opponents": a tool for spotting coevolutionary cycling by testing each generation against all the others.</li>
+    </ul>
+    <h3 style="font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin:30px 0 6px">Read further</h3>
+    <div class="refs">
+      <div>Van Valen, L. <b>A New Evolutionary Law.</b> <i>Evolutionary Theory</i> 1: 1–30, 1973. (The founding paper.)</div>
+      <div>Hamilton, W. D., Axelrod, R. &amp; Tanese, R. <b>Sexual reproduction as an adaptation to resist parasites.</b> <i>PNAS</i> 87: 3566–3573, 1990.</div>
+      <div>Lively, C. M. <b>Evidence from a New Zealand snail for the maintenance of sex by parasitism.</b> <i>Nature</i> 328: 519–521, 1987.</div>
+      <div>Decaestecker, E. et al. <b>Host–parasite "Red Queen" dynamics archived in pond sediment.</b> <i>Nature</i> 450: 870–873, 2007.</div>
+      <div>Benton, M. J. <b>The Red Queen and the Court Jester.</b> <i>Science</i> 323: 728–732, 2009. (Biotic vs abiotic drivers.)</div>
+      <div>Carroll, L. <b>Through the Looking-Glass.</b> 1871. (Where the Queen does her running.)</div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="wrap">
+    <div class="eyebrow">the metaphor, made runnable</div>
+    <h2>Don't just read it — <em>watch it race</em>.</h2>
+    <p style="margin:10px auto 0;text-align:center">Primordium turns the Red Queen into a live experiment you can run in your browser. Seed a lineage and watch predator and prey chase each other round the loop.</p>
+    <a class="btn solid" href="lab.html">▶ Enter the laboratory</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>PRIMORDIUM · a field guide to the Red Queen · MIT licensed · runs 100% client-side</span>
+    <span><a href="index.html">Home</a> &nbsp;·&nbsp; <a href="lab.html">Lab</a> &nbsp;·&nbsp; <a href="#more">References</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
