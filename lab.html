@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PRIMORDIUM — a coevolution experiment</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -77,13 +78,24 @@ h3.sec{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform
 .verdict p{font-size:12px;line-height:1.8;color:#b8b2a2}
 .statline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:11.5px;margin-top:10px;color:#8a917f}
 .statline b{color:var(--amber);font-weight:500}
+.plainread{border:1px solid var(--line);background:var(--panel);padding:14px 16px;font-size:13px;line-height:1.85;color:#c2bcab}
+.plainread b{color:var(--phosphor);font-weight:500}.plainread .q{font-family:var(--serif);font-style:italic;color:#8a917f}
+.exportbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.exportbar .hint{flex:1;min-width:200px}
 .placeholder{color:#5d6657;font-style:italic;font-family:var(--serif);font-size:15px;padding:40px 0;text-align:center}
-#tab-brain.active{display:grid;grid-template-columns:1fr 300px}
+#tab-brain.active{display:grid;grid-template-columns:1fr 340px}
 .brain-stage{border-right:1px solid var(--line);background:var(--panel);position:relative}
 #brainCanvas{display:block;width:100%;height:100%}
 .brain-side{background:var(--panel2);padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
 select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font-family:var(--mono);font-size:12px;padding:6px 8px;width:100%}
 .bstats{font-size:11.5px;line-height:1.95;color:#8a917f}.bstats b{color:var(--amber);font-weight:500}
+.cmptbl{width:100%;border-collapse:collapse;font-size:11px}
+.cmptbl th,.cmptbl td{padding:5px 8px;text-align:right;border-bottom:1px solid var(--line)}
+.cmptbl th:first-child,.cmptbl td:first-child{text-align:left;color:#8a917f;font-weight:400}
+.cmptbl thead th{font-weight:500;letter-spacing:.04em;text-transform:uppercase;font-size:9.5px;color:#7c856f;border-bottom:1px solid var(--line)}
+.cmptbl thead th.c-prey{color:var(--phosphor)}.cmptbl thead th.c-pred{color:var(--blood)}
+.cmptbl td b{color:var(--bone);font-weight:500}
+.cmptbl .sel-col{background:rgba(255,255,255,.04)}
 .blegend{font-size:10.5px;line-height:1.85;color:#7c856f}.blegend i{font-style:normal}
 #tab-mono{overflow-y:auto;height:100%}
 .mono-wrap{max-width:780px;margin:0 auto;padding:40px 40px 70px}
@@ -106,6 +118,19 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
 .splash .t em{color:var(--phosphor);font-style:normal}
 .splash .m{font-size:11px;letter-spacing:.14em;color:var(--phosphor-dim);text-transform:uppercase}
 .splash .dots{font-size:11px;color:var(--amber);letter-spacing:.3em}
+/* ---------- hover tooltips & inline help ---------- */
+#tip{position:fixed;z-index:120;max-width:268px;background:rgba(8,13,9,.98);border:1px solid var(--phosphor-dim);
+  color:var(--bone);font-family:var(--mono);font-size:11px;line-height:1.6;letter-spacing:.02em;padding:9px 11px;
+  pointer-events:none;opacity:0;transition:opacity .12s;box-shadow:0 8px 26px rgba(0,0,0,.55)}
+#tip.on{opacity:1}
+#tip b{color:var(--phosphor);font-weight:500}#tip .k{color:var(--amber)}
+.term{border-bottom:1px dotted var(--phosphor-dim);cursor:help}
+.hint{font-size:10.5px;line-height:1.65;color:#7c856f;letter-spacing:.03em}
+.hint b{color:var(--amber);font-weight:500}
+.helpdot{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid var(--phosphor-dim);
+  border-radius:50%;color:var(--phosphor-dim);font-size:9px;cursor:help;margin-left:6px;vertical-align:middle;transition:all .15s;flex:none}
+.helpdot:hover{color:var(--ink);background:var(--phosphor);border-color:var(--phosphor)}
+h3.sec{display:flex;align-items:center}
 </style>
 </head>
 <body>
@@ -120,10 +145,10 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
     <h1>PRIMOR<em>DIVM</em></h1>
     <div class="sub">a controlled experiment in predator–prey coevolution · recurrent, plastic, topology-evolving brains</div>
     <div class="tabs">
-      <button class="tab active" data-tab="arena">Arena</button>
-      <button class="tab" data-tab="lab">Laboratory</button>
-      <button class="tab" data-tab="brain">Brain</button>
-      <button class="tab" data-tab="mono">Monograph</button>
+      <button class="tab active" data-tab="arena" data-tip="<b>Watch a single chase.</b> Two evolved champions — a predator and a prey — race in real time. Pick which generation each one comes from.">Arena</button>
+      <button class="tab" data-tab="lab" data-tip="<b>Run the actual experiment.</b> Evolves many lineages and runs a statistical test for whether coevolution makes prey strategy cycle. This is where the science happens.">Laboratory</button>
+      <button class="tab" data-tab="brain" data-tip="<b>Look inside one brain.</b> The neural network steering a champion, drawn live — nodes, connections, memory loops and learning synapses.">Brain</button>
+      <button class="tab" data-tab="mono" data-tip="<b>Read the write-up.</b> The methods, the reasoning behind the control, and an honest account of the limits.">Monograph</button>
     </div>
   </header>
   <main>
@@ -135,35 +160,37 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
         <div class="tag" style="left:14px;top:38px;color:var(--phosphor)">◈ PREY · gen <span id="arGj">0</span></div>
       </div>
       <div class="arena-side">
-        <div><h3 class="sec">Live encounter</h3>
+        <div><h3 class="sec">Live encounter<span class="helpdot" data-tip="The red <b>▲ predator</b> chases the green <b>◈ prey</b> around a wrap-around arena (exit one edge, reappear on the opposite one). Neither was programmed to hunt or flee — both behaviours evolved.">i</span></h3>
           <div class="note">Two evolved champions, each steered only by its own neural network. Drag the dials to pit a predator from one generation against prey from another — the heart of the Red Queen test.</div>
         </div>
         <div class="ctl">
-          <div class="rowlab"><span>Predator generation</span><b id="giVal">0</b></div>
-          <input type="range" id="giSlider" min="0" max="0" value="0">
-          <div class="rowlab"><span>Prey generation</span><b id="gjVal">0</b></div>
-          <input type="range" id="gjSlider" min="0" max="0" value="0">
-          <label style="display:flex;gap:7px;align-items:center;color:#8a917f;margin-top:4px"><input type="checkbox" id="lockDiag" checked> lock to same generation</label>
+          <div class="rowlab"><span data-tip="A <b>generation</b> is one round of evolution: the whole population is scored, the best breed, and their mutated offspring form the next generation. Generation 0 = random starting brains; higher = more evolved.">Predator generation <span class="term">ⓘ</span></span><b id="giVal">0</b></div>
+          <input type="range" id="giSlider" min="0" max="0" value="0" data-tip="Choose how evolved the <b>predator</b> is. Slide left for an early, clumsy hunter; right for a refined one.">
+          <div class="rowlab"><span data-tip="Same idea, for the prey. Higher generation = a more evolved escape strategy.">Prey generation <span class="term">ⓘ</span></span><b id="gjVal">0</b></div>
+          <input type="range" id="gjSlider" min="0" max="0" value="0" data-tip="Choose how evolved the <b>prey</b> is. Slide left for an early, easy target; right for a slippery one.">
+          <label style="display:flex;gap:7px;align-items:center;color:#8a917f;margin-top:4px" data-tip="When ticked, both dials move together so predator and prey are always from the <b>same</b> generation — the fair, contemporaneous matchup. <b>Untick</b> to mismatch eras and expose the Red Queen: a newer predator can lose to an older prey."><input type="checkbox" id="lockDiag" checked> lock to same generation</label>
         </div>
-        <div class="outcome" id="arenaOutcome">—</div>
+        <div class="hint" id="genHint"></div>
+        <div class="outcome" id="arenaOutcome" data-tip="The result of this one chase. <b>Capture</b> = the predator reached the prey before time ran out. <b>Survives</b> = the prey stayed away for all 210 steps; the mean gap is how far apart they averaged.">—</div>
         <div class="intransitive" id="arenaIntr"></div>
-        <div style="display:flex;gap:8px"><button class="act" id="playPause">Pause</button><button class="act amber" id="newWorld">⟳ New lineage</button></div>
+        <div style="display:flex;gap:8px"><button class="act" id="playPause" data-tip="Pause or resume the animation. The chase loops automatically.">Pause</button><button class="act amber" id="newWorld" data-tip="Throw away this lineage and evolve a brand-new one from scratch (a fresh random seed). Takes a moment.">⟳ New lineage</button></div>
       </div>
     </section>
 
     <!-- LAB -->
     <section class="panel" id="tab-lab">
       <div class="lab-ctrl">
-        <div><h3 class="sec">Pre-registered test</h3>
+        <div><h3 class="sec">Pre-registered test<span class="helpdot" data-tip="<b>Pre-registered</b> means the prediction (H1), the control, and the exact statistic are all fixed <b>before</b> running — so the test can't be quietly tuned toward a 'nice' answer. The verdict is whatever the data say, including 'no effect'.">i</span></h3>
+          <div class="hint" style="margin-bottom:10px">In one line: <b>do prey strategies keep cycling when the predator evolves back, but settle down when it can't?</b> We run both cases and compare.</div>
           <div class="hyp">
-            <b>H1.</b> Under live coevolution, the prey's evasion-strategy trait <span class="h1">oscillates</span> (cyclicity) more than under a control where prey adapt to a <i>frozen</i> predator panel.<br><br>
+            <b>H1.</b> Under live coevolution, the prey's <span class="term" data-tip="A single number summarising the prey champion's escape behaviour each generation — roughly, how strongly it turns away from a threat. We watch this number's trajectory over the generations.">evasion-strategy trait</span> <span class="h1 term" data-tip="<b>Oscillates</b> = swings back and forth instead of climbing to a fixed value. Cycling strategies are the signature of a Red Queen arms race.">oscillates</span> (cyclicity) more than under a <span class="term" data-tip="The <b>control</b>: prey evolve against a fixed set of pre-made predators that never change. A still target should let strategy settle, not cycle. The difference between the two conditions is the evidence.">control where prey adapt to a frozen predator panel</span>.<br><br>
             <b>H0.</b> <span class="h0">No difference</span>: coevolution yields no more cycling than directed convergence.<br><br>
-            <b>Statistic:</b> depth of the deepest negative auto-correlation trough of the detrended trait series (lags 1–10). <b>Test:</b> two-sided permutation test, 20 000 shuffles. <b>Decide</b> before running; the verdict is computed live.
+            <b>Statistic:</b> <span class="term" data-tip="We measure how strongly the trait series swings back on itself (a deep negative autocorrelation trough). Bigger = more cyclic. Convergence and random drift don't produce it.">depth of the deepest negative auto-correlation trough</span> of the detrended trait series (lags 1–10). <b>Test:</b> <span class="term" data-tip="A <b>permutation test</b> shuffles which results belong to which group 20,000 times to see how often pure chance would produce a gap as big as the one observed. That gives the p-value.">two-sided permutation test, 20 000 shuffles</span>. <b>Decide</b> before running; the verdict is computed live.
           </div>
         </div>
-        <div class="field"><label>Generations per run</label><input id="genInput" type="number" value="45" min="20" max="120"></div>
-        <div class="field"><label>Replicates per condition</label><input id="repInput" type="number" value="8" min="3" max="24"></div>
-        <button class="act" id="runExp">▶ Run experiment</button>
+        <div class="field"><label>Generations per run <span class="term" data-tip="How many rounds of evolution each lineage runs. More generations = a longer trait series to detect cycling in, but a slower run.">ⓘ</span></label><input id="genInput" type="number" value="45" min="20" max="120"></div>
+        <div class="field"><label>Replicates per condition <span class="term" data-tip="How many independent lineages to evolve per condition. Evolution is noisy, so we repeat it. More replicates = a tighter, more trustworthy result, but a longer run.">ⓘ</span></label><input id="repInput" type="number" value="8" min="3" max="24"></div>
+        <button class="act" id="runExp" data-tip="Start the experiment. It harvests the frozen control, evolves every replicate of both conditions, then runs the statistics — all in your browser.">▶ Run experiment</button>
         <div id="progWrap"><div id="progTrack"><div id="progBar"></div></div><div id="progLabel">—</div></div>
         <div class="note" style="font-size:12.5px">Heavier settings give tighter confidence intervals but take longer. Everything runs in your browser; nothing is sent anywhere.</div>
       </div>
@@ -171,17 +198,30 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
         <div class="placeholder" id="labPlaceholder">No experiment run yet. Set the parameters and press <span style="color:var(--phosphor)">Run experiment</span>.<br>A typical 45×8 run takes roughly half a minute.</div>
         <div id="labResults" style="display:none;flex-direction:column;gap:20px">
           <div class="verdict" id="verdict"></div>
-          <div class="lab-grid">
-            <div class="card"><h3 class="sec">Strategy trajectories (example runs)</h3><canvas id="trajChart"></canvas>
-              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevolution</span><span><i class="swatch" style="background:var(--amber)"></i>control (frozen target)</span></div>
-              <div class="cap">Prey evasion-alignment of the champion each generation. Oscillation here is the signal under test.</div></div>
-            <div class="card"><h3 class="sec">Cyclicity by replicate</h3><canvas id="cycChart"></canvas>
-              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevo</span><span><i class="swatch" style="background:var(--amber)"></i>control</span><span>— median</span></div>
-              <div class="cap">Each dot is one replicate. The permutation test asks whether these two clouds differ.</div></div>
+          <div class="plainread" id="plainRead"></div>
+          <div class="exportbar">
+            <button class="act" id="exportData" data-tip="Save this run as a CSV: one row per generation for an example lineage of each condition, with the prey trait, predator fitness, proteanism and brain size. Open it in Excel, R, Python — anything.">⬇ Download this run (CSV)</button>
+            <span class="hint">Generation-by-generation series for one example lineage per condition — open it anywhere and study it yourself.</span>
           </div>
-          <div class="card"><h3 class="sec">CIAO — current predators vs ancestral prey (one coevo run)</h3>
+          <div class="lab-grid">
+            <div class="card"><h3 class="sec">How the prey's strategy moved<span class="helpdot" data-tip="Each line tracks one prey lineage's escape strategy across the generations. A <b>wavy</b> green line = cycling (the Red Queen). A line that <b>flattens out</b> = converging to a fixed answer, which is what the control should do.">i</span></h3><canvas id="trajChart"></canvas>
+              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevolution</span><span><i class="swatch" style="background:var(--amber)"></i>control (frozen target)</span></div>
+              <div class="cap">The prey champion's escape behaviour, generation by generation. Green wavering = the strategy keeps changing (cycling); amber settling toward a line = it found one answer and stuck. The wobble is the thing we're testing for.</div></div>
+            <div class="card"><h3 class="sec">Is the wobble real, or luck?<span class="helpdot" data-tip="Each dot is one lineage's cyclicity score; the bar is the group median. If the green (coevolution) cloud sits clearly <b>above</b> the amber (control) cloud, that's the predicted effect. The permutation test checks whether the gap is real or just noise.">i</span></h3><canvas id="cycChart"></canvas>
+              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevo</span><span><i class="swatch" style="background:var(--amber)"></i>control</span><span>— median</span></div>
+              <div class="cap">Every lineage gets one "how cyclic was it" score (a dot); the bar is the group's middle. Evolution is noisy, so we ask: does the green cloud really sit higher than the amber one, or could chance alone produce this gap? That's the p-value.</div></div>
+          </div>
+          <div class="lab-grid">
+            <div class="card"><h3 class="sec">The arms race — why the scoreboard lies<span class="helpdot" data-tip="In the control, the predators never change, so as prey improve their fitness <b>rises</b> and the predators' catch rate <b>falls</b> — visible progress. Under coevolution both sides improve together, so the predator's score stays near 0.5 even though both are getting better. That flat line IS the Red Queen: all the running you can do, to stay in the same place.">i</span></h3><canvas id="raceChart"></canvas>
+              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevo: predator fitness</span><span><i class="swatch" style="background:var(--amber)"></i>control: predator catch-rate</span></div>
+              <div class="cap">Watch the amber line <b>fall</b>: against frozen predators, evolving prey get away more and more — clear, visible progress. The green line stays <b>flat near the middle</b>: under live coevolution both sides improve at once, so the raw score barely moves. The prey are getting better — the scoreboard just can't see it. This is the single most important reason a coevolution study needs a control.</div></div>
+            <div class="card"><h3 class="sec">The brains grow themselves<span class="helpdot" data-tip="Brains start as a bare input→output wiring. NEAT-style mutation can add nodes and connections, but only keeps them when they help. This line is the champion's number of active connections per generation — structure that evolution built, not us.">i</span></h3><canvas id="cxChart"></canvas>
+              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevolution</span><span><i class="swatch" style="background:var(--amber)"></i>control</span></div>
+              <div class="cap">Active connections in the prey champion's brain, generation by generation. Nobody designed these networks — they start minimal and add wiring only when the extra complexity earns its keep. Rising lines mean evolution is discovering it needs memory or finer control to keep up.</div></div>
+          </div>
+          <div class="card"><h3 class="sec">Every era's predator vs every era's prey (CIAO)<span class="helpdot" data-tip="A tournament grid: every predator generation (rows) played against every prey generation (columns), brighter = predator won. A smooth bright-to-dark <b>diagonal</b> means steady progress. <b>Mottled, patchy</b> bands mean a newer predator lost to an older prey — intransitivity, the fingerprint of cycling.">i</span></h3>
             <canvas id="ciaoChart"></canvas>
-            <div class="cap">Predator generation (rows, top→bottom) × prey generation (cols, left→right); brighter = predator wins. A clean diagonal gradient means transitive progress; mottled, non-monotone bands mean <span style="color:var(--amber)">intransitivity</span> — a newer predator losing to an older prey — the fingerprint of Red Queen cycling. Intransitivity index: <b id="ciaoScore" style="color:var(--amber)">—</b></div>
+            <div class="cap">A round-robin tournament across time: each predator generation (rows, top→bottom) plays each prey generation (columns, left→right); brighter = the predator won. A clean bright-to-dark <b>diagonal</b> means newer always beats older — steady, ladder-like progress. <b>Patchy, mottled</b> bands mean a newer predator sometimes <i>loses</i> to an ancestral prey (<span style="color:var(--amber)">intransitivity</span>) — like rock-paper-scissors, the fingerprint of Red Queen cycling. Intransitivity index: <b id="ciaoScore" style="color:var(--amber)">—</b></div>
           </div>
         </div>
       </div>
@@ -191,10 +231,10 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
     <section class="panel" id="tab-brain">
       <div class="brain-stage"><canvas id="brainCanvas"></canvas></div>
       <div class="brain-side">
-        <div><h3 class="sec">Evolved controller</h3>
+        <div><h3 class="sec">Evolved controller<span class="helpdot" data-tip="This is the literal 'brain' deciding how a champion moves: inputs on the left (what it senses), outputs on the right (turn &amp; thrust), and whatever hidden wiring evolved in between. Watch the nodes pulse as it 'thinks'.">i</span></h3>
           <div class="note">An actual genome from the current lineage. Topology, recurrence and plasticity all arose by mutation and selection — none were designed.</div></div>
-        <select id="brainWho"><option value="prey">Prey champion</option><option value="pred">Predator champion</option></select>
-        <div class="ctl"><div class="rowlab"><span>Generation</span><b id="brainGenVal">0</b></div><input type="range" id="brainGen" min="0" max="0" value="0"></div>
+        <select id="brainWho" data-tip="Both champions are compared in the table below. This switches which one is <b>drawn on the canvas</b>."><option value="prey">Diagram: prey brain</option><option value="pred">Diagram: predator brain</option></select>
+        <div class="ctl"><div class="rowlab"><span data-tip="Step through evolution. Early generations have tiny, simple brains; later ones often grow extra nodes and loops as complexity starts to pay off.">Generation <span class="term">ⓘ</span></span><b id="brainGenVal">0</b></div><input type="range" id="brainGen" min="0" max="0" value="0" data-tip="Drag to see how this brain grew over the generations."></div>
         <div class="bstats" id="brainStats"></div>
         <div class="blegend">
           <i style="color:var(--phosphor)">▬</i> excitatory &nbsp; <i style="color:var(--blood)">▬</i> inhibitory<br>
@@ -231,7 +271,16 @@ select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font
           <p><b>On honest reporting.</b> The verdict is whatever the data say — including "no effect." Coevolution frequently fails to produce clean cycling, collapsing instead into disengagement or "mediocre stable states" (Ficici &amp; Pollack). A null here is a real outcome, not a failure of the instrument, and the code does not tune itself toward significance.</p>
         </div>
 
-        <h3><span class="num">v.</span> Lineage of the methods</h3>
+        <h3><span class="num">v.</span> What a "null result" really means</h3>
+        <p>If a run reports <b>no effect</b>, it is tempting to feel the experiment failed. It didn't. A null result is a genuine measurement: <i>under these conditions, we could not distinguish coevolution from the control.</i> That is information. It rules things out, it bounds how big any effect can plausibly be, and — crucially — it is the outcome an honest test must be willing to return, or the test was never really a test.</p>
+        <p>Three different things can hide behind a single null here, and they are worth telling apart. <b>(1) There is genuinely no extra cycling</b> — the prey found one good escape and the predator couldn't force them off it. <b>(2) There is cycling, but our ruler is too blunt</b> — a single number (one prey trait) can't see motion that's spread across many dimensions of behaviour; this is exactly when the CIAO grid lights up with intransitivity while the trait line looks calm. <b>(3) The run is just underpowered</b> — too few replicates or generations, so real signal is buried in noise. More replicates and longer runs separate (3) from (1) and (2); comparing the trait verdict against the CIAO grid separates (2) from (1).</p>
+
+        <h3><span class="num">vi.</span> What happens in real biology when the race doesn't run</h3>
+        <p>Coevolution failing to produce a clean, cycling arms race is not an artifact of toy simulations — it is common in nature, and biologists have names for the ways it happens.</p>
+        <p><b>Stalemates and "mediocre stable states."</b> Two species can settle into a stand-off where neither can cheaply improve against the other, and selection for further change goes slack (Ficici &amp; Pollack named this failure mode in coevolutionary systems). <b>Disengagement.</b> One side can get so far ahead that the other effectively drops out of the contest — the pressure that drove the race disappears. <b>Evolutionary stasis.</b> Much of the fossil record shows long stretches where lineages barely change ("living fossils" like horseshoe crabs, coelacanths, and crocodilians have held a body plan for tens or hundreds of millions of years), because what they have already works and nothing keeps pushing. <b>Extinction.</b> The bleakest resolution of Van Valen's original observation: if you <i>cannot</i> keep running, you fall behind and disappear — which is why extinction risk stays stubbornly present no matter how long a lineage has already survived.</p>
+        <p>And where the race <i>does</i> run, biology shows it directly: cycling host and parasite genotypes in <i>Daphnia</i> revived from pond sediment, sexual snails out-competing clones precisely where parasites are thick, garter snakes and their toxic newt prey escalating poison and resistance in lockstep. The point of a control and an honest null is to tell these apart — to know whether you are watching a real Red Queen or a stalemate wearing its costume.</p>
+
+        <h3><span class="num">vii.</span> Lineage of the methods</h3>
         <div class="refs">
           <div>Van Valen, L. <b>A New Evolutionary Law.</b> Evolutionary Theory 1: 1–30, 1973. (The Red Queen.)</div>
           <div>Cliff, D. &amp; Miller, G. F. <b>Tracking the Red Queen: Measurements of Adaptive Progress in Co-Evolutionary Simulations.</b> ECAL 1995, pp. 200–218. (CIAO plots; coevolved recurrent pursuit/evasion nets.)</div>
@@ -825,6 +874,24 @@ const sleep = ()=>new Promise(r=>setTimeout(r,0));
 const css = n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 const COL = { phos:css('--phosphor'), amber:css('--amber'), blood:css('--blood'), bone:css('--bone'), dim:css('--phosphor-dim'), line:css('--line') };
 
+/* ---------- floating hover tooltips (any element with data-tip) ---------- */
+const tipEl=document.createElement('div'); tipEl.id='tip'; document.body.appendChild(tipEl);
+function placeTip(el,x,y){
+  const t=el.getAttribute('data-tip'); if(!t){ tipEl.classList.remove('on'); return; }
+  tipEl.innerHTML=t; tipEl.classList.add('on');
+  const pad=15, w=tipEl.offsetWidth, h=tipEl.offsetHeight;
+  let nx=x+pad, ny=y+pad;
+  if(nx+w>innerWidth-8) nx=x-w-pad;
+  if(ny+h>innerHeight-8) ny=y-h-pad;
+  tipEl.style.left=Math.max(8,nx)+'px'; tipEl.style.top=Math.max(8,ny)+'px';
+}
+document.addEventListener('mousemove',e=>{
+  const el=e.target.closest && e.target.closest('[data-tip]');
+  if(el) placeTip(el,e.clientX,e.clientY);
+  else if(tipEl.classList.contains('on')) tipEl.classList.remove('on');
+});
+document.addEventListener('mouseleave',()=>tipEl.classList.remove('on'));
+
 /* ---------- shared lineage (Arena + Brain) ---------- */
 const ARENA_GENS = 40;
 let WORLD = null;        // { predChamps, preyChamps, G }
@@ -838,6 +905,8 @@ function buildWorld(seed){
   for (const s of ['giSlider','gjSlider','brainGen']) { $(s).max = gmax; $(s).value = gmax; }
   arena.gi = gmax; arena.gj = gmax;
   $('giVal').textContent = gmax; $('gjVal').textContent = gmax; $('brainGenVal').textContent = gmax;
+  $('genHint').innerHTML = `This lineage evolved for <b>${WORLD.G} generations</b> (numbered 0–${gmax}). `+
+    `Gen <b>0</b> = random first brains; gen <b>${gmax}</b> = most-evolved. Both dials start at ${gmax}.`;
   computeMatchup();
   brain.dirty = true;
 }
@@ -938,12 +1007,28 @@ function buildBrain(){
   outs.forEach((n,k)=>pos.set(n.id,{x:W*0.90,y:H*(k+1)/(outs.length+1)}));
   hid.forEach((n,k)=>{ const fx=(k+1)/(hid.length+1); pos.set(n.id,{x:W*(0.32+0.36*fx),y:H*(0.5+0.34*Math.sin(k*1.7))}); });
   brain.pos=pos;
-  const enabled=g.conns.filter(c=>c.enabled);
+  // side-by-side stats for both champions at this generation
+  const champStats=(gm)=>{ if(!gm)return null; const en=gm.conns.filter(c=>c.enabled);
+    return { nodes:gm.nodes.length, syn:en.length,
+      hid:gm.nodes.filter(n=>n.type==='hid').length,
+      rec:en.filter(c=>c.from>=c.to).length,
+      plastic:en.filter(c=>Math.abs(c.eta)>1e-4).length,
+      maxEta:Math.max(0,...en.map(c=>Math.abs(c.eta))) }; };
+  const sP=champStats(WORLD.preyChamps[gen]), sD=champStats(WORLD.predChamps[gen]);
+  const cell=(v,sel)=>`<td class="${sel?'sel-col':''}"><b>${v}</b></td>`;
+  const row=(label,kp,kd,fmt=(x)=>x)=>
+    `<tr><td>${label}</td>${cell(sP?fmt(sP[kp]):'–',who==='prey')}${cell(sD?fmt(sD[kd]):'–',who==='pred')}</tr>`;
   $('brainStats').innerHTML=
-    `nodes <b>${g.nodes.length}</b> &nbsp; synapses <b>${enabled.length}</b><br>`+
-    `hidden units <b>${hid.length}</b><br>`+
-    `recurrent / loop edges <b>${enabled.filter(c=>c.from>=c.to).length}</b><br>`+
-    `plastic synapses <b>${enabled.filter(c=>Math.abs(c.eta)>1e-4).length}</b> (max |η| ${Math.max(0,...enabled.map(c=>Math.abs(c.eta))).toFixed(3)})`;
+    `<table class="cmptbl"><thead><tr><th></th>`+
+    `<th class="c-prey ${who==='prey'?'sel-col':''}">Prey</th>`+
+    `<th class="c-pred ${who==='pred'?'sel-col':''}">Predator</th></tr></thead><tbody>`+
+    row('nodes','nodes','nodes')+
+    row('synapses','syn','syn')+
+    row('hidden units','hid','hid')+
+    row('recurrent / loop','rec','rec')+
+    row('plastic synapses','plastic','plastic')+
+    row('max |η|','maxEta','maxEta',x=>(+x).toFixed(3))+
+    `</tbody></table>`;
   brain.dirty=false;
 }
 function renderBrain(){
@@ -983,6 +1068,35 @@ function renderBrain(){
 let lab={ running:false };
 function setProg(frac,label){ $('progBar').style.width=(frac*100)+'%'; $('progLabel').textContent=label; }
 function sizeCard(c,h){ const dpr=Math.min(devicePixelRatio||1,2); c.style.height=h+'px'; c.width=c.clientWidth*dpr; c.height=h*dpr; const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); c._w=c.clientWidth; c._h=h; return x; }
+/* generic small line chart: series = [{data:[...], col:'#...'}], opts {h,lo,hi,zero} */
+function miniChart(id, series, opts){
+  opts=opts||{}; const H=opts.h||150, c=$(id), x=sizeCard(c,H), W=c._w, pad=10;
+  x.clearRect(0,0,W,H);
+  let lo=opts.lo, hi=opts.hi;
+  if(lo===undefined||hi===undefined){
+    let mn=Infinity,mx=-Infinity;
+    series.forEach(s=>s.data.forEach(v=>{ if(v<mn)mn=v; if(v>mx)mx=v; }));
+    const span=(mx-mn)||1; if(lo===undefined)lo=mn-span*0.1; if(hi===undefined)hi=mx+span*0.1;
+  }
+  const Y=v=>H-pad-(v-lo)/((hi-lo)||1)*(H-2*pad);
+  if(opts.zero!==undefined){ x.strokeStyle='rgba(216,210,194,.14)'; x.setLineDash([3,4]); x.beginPath(); x.moveTo(pad,Y(opts.zero)); x.lineTo(W-pad,Y(opts.zero)); x.stroke(); x.setLineDash([]); }
+  series.forEach(s=>{ if(!s.data||!s.data.length)return;
+    x.strokeStyle=s.col; x.lineWidth=1.6; x.beginPath();
+    s.data.forEach((v,i)=>{ const X=pad+i/((s.data.length-1)||1)*(W-2*pad); i?x.lineTo(X,Y(v)):x.moveTo(X,Y(v)); });
+    x.stroke();
+  });
+}
+/* tidy long-format CSV of the example runs so results can be studied offline */
+function exportCSV(R){
+  const rows=[['condition','replicate','generation','prey_trait','predator_fitness','proteanism','brain_connections']];
+  const add=(cond,rep)=>{ const n=rep.preyTrait.length; for(let g=0;g<n;g++) rows.push([cond,0,g,
+    rep.preyTrait[g].toFixed(5), rep.predCatch[g].toFixed(5), rep.preyProtean[g].toFixed(5), rep.complexity[g]]); };
+  add('coevolution',R.firstCo); add('control',R.firstCt);
+  const csv=rows.map(r=>r.join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'}), url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=`primordium_${R.gens}gen_${R.reps}rep.csv`;
+  document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+}
 
 async function runExperiment(){
   if(lab.running)return; lab.running=true;
@@ -1012,21 +1126,26 @@ async function runExperiment(){
 
 function renderResults(R){
   $('labResults').style.display='flex';
+  lab.last=R;
   // verdict
   const v=$('verdict'); const sig=R.pt.p<0.05; const dir=R.coMed>R.ctMed;
-  let title, body, cls;
-  if(sig && dir){ cls=''; title='Consistent with <em>Red Queen cycling</em>';
-    body=`Coevolving prey show significantly more strategy oscillation than prey adapting to a frozen target. The moving opponent appears to keep the strategy in motion.`; }
-  else if(sig && !dir){ cls='null'; title='Opposite of H1 — control cycled <em>more</em>';
-    body=`An unexpected, honest result: the converging control oscillated more than coevolution by this measure. Worth investigating, not glossing over.`; }
-  else { cls='null'; title='No cycling detected <em>beyond control</em>';
-    body=`We fail to reject the null: by the 1-D trait measure, coevolution does not oscillate more than directed convergence. Yet the CIAO matrix shows intransitivity ${R.cia.intransitivity.toFixed(2)} — suggesting non-progressive dynamics a single trait can miss. This pattern (cycling visible in dominance, not in a scalar) and outright "mediocre stable states" are both well documented (Ficici & Pollack).`; }
+  let title, body, cls, plain;
+  if(sig && dir){ cls=''; title='Looks like the <em>Red Queen</em>';
+    body=`The coevolving prey kept changing their escape strategy noticeably more than prey facing a frozen, unchanging predator. A live, adapting opponent seems to keep the strategy in perpetual motion — exactly what the hypothesis predicted.`;
+    plain=`<b>In plain terms:</b> when the predator could fight back, the prey never settled on one "best" way to escape — they kept shifting, generation after generation. When the predator was frozen in place, the prey found a good answer and mostly stuck with it. The difference between those two is unlikely to be a fluke <span class="q">(roughly a ${(R.pt.p*100).toFixed(1)}% chance of seeing a gap this big by luck alone)</span>. That ongoing, never-finished chase is the Red Queen.`; }
+  else if(sig && !dir){ cls='null'; title='A surprise — the <em>control</em> wobbled more';
+    body=`Not what the hypothesis predicted, and we're reporting it straight: the prey facing a frozen predator actually changed strategy more than the coevolving ones, by this measure. That's a real result worth chewing on, not something to hide.`;
+    plain=`<b>In plain terms:</b> the prediction was that a moving target keeps strategies cycling. This run says the opposite by our main measure. That can happen — maybe the frozen-predator panel happened to be tricky to pin down, or the single number we track isn't capturing the real story. Honest science keeps results like this in view instead of quietly dropping them.`; }
+  else { cls='null'; title='No clear cycling <em>this time</em>';
+    body=`By our main measure, the coevolving prey didn't wobble in strategy any more than prey adapting to a frozen target. We can't claim a Red Queen effect from this run. But notice the tournament grid still shows an intransitivity of ${R.cia.intransitivity.toFixed(2)} — newer champions sometimes losing to older ones — which hints at non-progressive dynamics a single number can miss.`;
+    plain=`<b>What a "no result" means here:</b> it does <i>not</i> mean the experiment failed or the Red Queen is false. It means <i>this</i> run, with these settings, didn't find more cycling under coevolution than under the control. Real coevolution genuinely behaves this way a lot of the time — it can stall into a stand-off, settle into a "good enough" stalemate, or churn in ways a one-dimensional trait can't see. Try more replicates or generations to sharpen the picture, and read the Monograph tab for what null results mean in real biology.`; }
   v.className='verdict'+(cls?' '+cls:'');
   v.innerHTML=`<div class="lab">Verdict — computed from this run</div><div class="big">${title}</div><p>${body}</p>`+
     `<div class="statline"><span>coevo cyclicity <b>${R.coMed.toFixed(3)}</b> <span style="color:#5d6657">[${R.coCI[0].toFixed(2)},${R.coCI[1].toFixed(2)}]</span></span>`+
     `<span>control <b>${R.ctMed.toFixed(3)}</b> <span style="color:#5d6657">[${R.ctCI[0].toFixed(2)},${R.ctCI[1].toFixed(2)}]</span></span>`+
     `<span>permutation <b>p=${R.pt.p.toFixed(3)}</b></span><span>CIAO intransitivity <b>${R.cia.intransitivity.toFixed(3)}</b></span>`+
     `<span>${R.reps} reps · ${R.gens} gens</span></div>`;
+  $('plainRead').innerHTML=plain;
   // trajectory chart
   const t=sizeCard($('trajChart'),160), W=$('trajChart')._w, H=160;
   t.clearRect(0,0,W,H); const pad=8;
@@ -1053,6 +1172,16 @@ function renderResults(R){
     h.fillRect(off+j*cell,i*cell,cell+.5,cell+.5); }
   h.strokeStyle='rgba(232,179,75,.25)';h.lineWidth=1;h.beginPath();h.moveTo(off,0);h.lineTo(off+side,side);h.stroke();
   $('ciaoScore').textContent=R.cia.intransitivity.toFixed(3);
+  // arms-race chart (predator fitness / catch-rate over generations) — 0..1 with a 0.5 reference
+  miniChart('raceChart', [
+    { data:R.firstCt.predCatch, col:COL.amber },
+    { data:R.firstCo.predCatch, col:COL.phos }
+  ], { h:150, lo:0, hi:1, zero:0.5 });
+  // complexity chart (champion's enabled connections over generations)
+  miniChart('cxChart', [
+    { data:R.firstCt.complexity, col:COL.amber },
+    { data:R.firstCo.complexity, col:COL.phos }
+  ], { h:150 });
   // monograph live line
   $('monoResult').innerHTML=`<b style="color:var(--phosphor)">Last run (${R.reps} replicates × ${R.gens} generations):</b> `+
     `coevolution cyclicity ${R.coMed.toFixed(3)} (95% CI ${R.coCI[0].toFixed(2)}–${R.coCI[1].toFixed(2)}), `+
@@ -1084,6 +1213,7 @@ $('newWorld').onclick=()=>{ $('newWorld').disabled=true; $('newWorld').textConte
 $('brainWho').onchange=()=>{brain.dirty=true;}; $('brainGen').oninput=e=>{ $('brainGenVal').textContent=e.target.value; brain.dirty=true; };
 // lab
 $('runExp').onclick=runExperiment;
+$('exportData').onclick=()=>{ if(lab.last)exportCSV(lab.last); };
 
 /* master animation loop */
 function tick(){ if(activeTab==='arena')stepArena(); else if(activeTab==='brain')renderBrain(); requestAnimationFrame(tick); }

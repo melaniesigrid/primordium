@@ -11,9 +11,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ink:#070b08; --panel:#0c120e; --panel2:#101712; --line:#1d2a20;
-  --phosphor:#8df2ae; --phosphor-dim:#3e6a4d; --amber:#e8b34b; --blood:#e8604f;
-  --bone:#d8d2c2; --serif:'Cormorant Garamond',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --ink:#0b0707; --panel:#150c0c; --panel2:#1c1010; --line:#33191a;
+  --phosphor:#e8665a; --phosphor-dim:#8c3a35; --amber:#e0a24a; --blood:#ff7a5c;
+  --bone:#dccac2; --serif:'Cormorant Garamond',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -31,7 +31,7 @@ a:hover{color:var(--bone)}
 /* ---------- nav ---------- */
 nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:18px;
   padding:14px 28px;border-bottom:1px solid var(--line);
-  background:linear-gradient(180deg,rgba(13,19,15,.96),rgba(7,11,8,.86));backdrop-filter:blur(6px)}
+  background:linear-gradient(180deg,rgba(21,12,12,.96),rgba(11,7,7,.86));backdrop-filter:blur(6px)}
 nav .brand{font-family:var(--serif);font-weight:600;letter-spacing:.2em;font-size:18px;color:var(--bone)}
 nav .brand em{color:var(--phosphor);font-style:normal}
 nav .links{margin-left:auto;display:flex;gap:20px;align-items:center;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
@@ -97,8 +97,8 @@ li::before{content:"→ ";color:var(--phosphor-dim)}
 .view p{font-size:12.5px;line-height:1.7;color:#a9a393;margin:0;max-width:none}
 
 /* ---------- callout / quote ---------- */
-.caveat{border-left:2px solid var(--phosphor-dim);padding:16px 0 16px 20px;margin:24px 0 0;background:rgba(141,242,174,.04)}
-.caveat p{color:#a9c4af;font-size:12.5px;margin:0;max-width:none}.caveat p+p{margin-top:10px}
+.caveat{border-left:2px solid var(--phosphor-dim);padding:16px 0 16px 20px;margin:24px 0 0;background:rgba(232,102,90,.05)}
+.caveat p{color:#cba7a0;font-size:12.5px;margin:0;max-width:none}.caveat p+p{margin-top:10px}
 .quote{font-family:var(--serif);font-style:italic;font-size:clamp(20px,3.4vw,30px);color:var(--bone);line-height:1.35;max-width:720px;margin:8px auto;text-align:center}
 .quote em{color:var(--phosphor);font-style:italic}
 .quote .by{display:block;font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--phosphor-dim);margin-top:18px}
@@ -137,6 +137,7 @@ footer a{color:var(--phosphor-dim)}footer a:hover{color:var(--phosphor)}
     <a href="#why" class="hideSm">Why it happens</a>
     <a href="#evidence" class="hideSm">Evidence</a>
     <a href="#test" class="hideSm">Test it</a>
+    <a href="#null" class="hideSm">Null results</a>
     <a class="btn solid" href="lab.html">Enter the lab →</a>
   </span>
 </nav>
@@ -252,6 +253,65 @@ footer a{color:var(--phosphor-dim)}footer a:hover{color:var(--phosphor)}
     <p style="margin-top:26px">You can run exactly this experiment yourself. <b>Primordium</b> is a browser-based artificial-life lab where two species of neural network — one predator, one prey — coevolve in real time. It includes a frozen-target control, replicate runs, and a permutation test that prints an honest verdict, so you can watch a Red Queen race (or watch it fail to start) and inspect the data behind it.</p>
     <div style="text-align:center;margin-top:24px">
       <a class="btn solid" href="lab.html" style="padding:13px 28px;font-size:12px">▶ See the Red Queen run in the lab</a>
+    </div>
+  </div>
+</section>
+
+<!-- NULL RESULTS & REAL BIOLOGY -->
+<section id="null">
+  <div class="wrap">
+    <div class="eyebrow">when the race doesn't run</div>
+    <h2>What a <em>null result</em> actually means</h2>
+    <p class="lead">Half of understanding an experiment is knowing what it means when nothing happens. In coevolution, "nothing happened" is one of the most interesting answers you can get.</p>
+    <p>Suppose you run the test and find <b>no extra cycling</b> under coevolution. It is tempting to call that a failure. It isn't. A null result is a real measurement — it says <i>under these conditions, we could not tell the arms race apart from the control.</i> That rules things out, it puts an upper bound on how strong any effect could be, and it is the answer an honest test has to be willing to give. A test that can only ever say "yes" was never testing anything.</p>
+    <p>But "no result" can hide three very different situations, and a good biologist separates them:</p>
+    <div class="cards">
+      <div class="card">
+        <div class="n">i.</div>
+        <h3>Genuinely no race</h3>
+        <p>The two species really did settle. The prey found one good escape, the predator couldn't force them off it, and selection for further change went quiet. Real, and worth explaining.</p>
+      </div>
+      <div class="card">
+        <div class="n">ii.</div>
+        <h3>The ruler is too blunt</h3>
+        <p>There <i>is</i> cycling, but you measured it with a single number that can't see motion spread across many dimensions of behaviour. A richer view (like a tournament across generations) may light up where one trait looked calm.</p>
+      </div>
+      <div class="card">
+        <div class="n">iii.</div>
+        <h3>Not enough data</h3>
+        <p>Evolution is noisy. With too few repeats or too few generations, a real signal is simply buried. More replicates pull it out — or confirm it was never there.</p>
+      </div>
+    </div>
+    <p style="margin-top:24px">Telling these apart is the whole craft: more replicates separate "underpowered" from "real," and comparing different measurements separates "blunt ruler" from "genuinely flat."</p>
+
+    <div class="eyebrow" style="margin-top:40px">what this looks like in nature</div>
+    <h2>Real species <em>stall, drift, and vanish</em></h2>
+    <p class="lead">Coevolution failing to produce a clean, cycling arms race isn't a quirk of simulations. It happens constantly in the wild, and biologists have names for each way it goes.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="n">i.</div>
+        <h3>Stalemate</h3>
+        <p>Two species reach a stand-off where neither can cheaply get ahead, so the pressure to keep changing slackens — a "mediocre stable state." The race is technically on, but nobody's running hard.</p>
+      </div>
+      <div class="card">
+        <div class="n">ii.</div>
+        <h3>Disengagement</h3>
+        <p>One side pulls so far ahead that the other effectively drops out of the contest. With no one to push against, the force driving the arms race simply evaporates.</p>
+      </div>
+      <div class="card">
+        <div class="n">iii.</div>
+        <h3>Stasis</h3>
+        <p>"Living fossils" — horseshoe crabs, coelacanths, crocodilians — have held the same body plan for tens or hundreds of millions of years. What they have works, and nothing keeps shoving them to change.</p>
+      </div>
+      <div class="card">
+        <div class="n">iv.</div>
+        <h3>Extinction</h3>
+        <p>Van Valen's bleakest reading: if you <i>can't</i> keep up, you fall behind and disappear. That's why extinction risk never really goes away, no matter how long a lineage has already lasted.</p>
+      </div>
+    </div>
+    <p style="margin-top:24px">And where the race genuinely <i>does</i> run, nature shows it plainly: host and parasite genotypes cycling in water fleas revived from pond mud, sexual snails beating clones exactly where parasites are thick, garter snakes and toxic newts escalating poison and resistance in lockstep. The reason a careful study bothers with a control and takes null results seriously is precisely to tell these apart — to know whether you're watching a real Red Queen, or a stalemate wearing her costume.</p>
+    <div class="caveat">
+      <p><b>The takeaway for a student.</b> "We found no effect" and "the Red Queen is false" are not the same sentence. The first is a result about one experiment; the second is a claim about the world that no single null could establish. Good science reports the first honestly and resists inflating it into the second.</p>
     </div>
   </div>
 </section>
