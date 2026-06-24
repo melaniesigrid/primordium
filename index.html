@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRIMORDIUM — predator–prey coevolution in your browser</title>
+<meta name="description" content="A falsifiable experiment in predator–prey coevolution. Neural networks with evolvable topology, recurrence and lifetime plasticity, racing under the Red Queen — with a control, replicates, and a verdict computed from the data.">
+<meta property="og:title" content="PRIMORDIUM — a coevolution experiment">
+<meta property="og:description" content="Does predator–prey coevolution cycle? A self-contained, reproducible test of the Red Queen — runs entirely in your browser.">
+<meta property="og:type" content="website">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070b08; --panel:#0c120e; --panel2:#101712; --line:#1d2a20;
+  --phosphor:#8df2ae; --phosphor-dim:#3e6a4d; --amber:#e8b34b; --blood:#e8604f;
+  --bone:#d8d2c2; --serif:'Cormorant Garamond',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--bone);font-family:var(--mono);position:relative;line-height:1.6;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:80;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:81;
+  background:radial-gradient(ellipse at 50% 30%,transparent 60%,rgba(0,0,0,.55) 100%)}
+a{color:var(--phosphor);text-decoration:none}
+a:hover{color:var(--bone)}
+.wrap{max-width:880px;margin:0 auto;padding:0 28px}
+.eyebrow{font-size:10px;letter-spacing:.32em;color:var(--phosphor-dim);text-transform:uppercase}
+.amber{color:var(--amber)} .phos{color:var(--phosphor)} .blood{color:var(--blood)}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:18px;
+  padding:14px 28px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,rgba(13,19,15,.96),rgba(7,11,8,.86));backdrop-filter:blur(6px)}
+nav .brand{font-family:var(--serif);font-weight:600;letter-spacing:.2em;font-size:18px;color:var(--bone)}
+nav .brand em{color:var(--phosphor);font-style:normal}
+nav .links{margin-left:auto;display:flex;gap:20px;align-items:center;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+nav .links a{color:var(--phosphor-dim)} nav .links a:hover{color:var(--phosphor)}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  background:transparent;color:var(--phosphor);border:1px solid var(--phosphor-dim);
+  padding:8px 16px;cursor:pointer;transition:all .15s;display:inline-block}
+.btn:hover{background:var(--phosphor);color:var(--ink)}
+.btn.solid{background:var(--phosphor);color:var(--ink);border-color:var(--phosphor)}
+.btn.solid:hover{background:var(--bone);border-color:var(--bone)}
+@media(max-width:640px){nav .links a.hideSm{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:92px 0 70px;text-align:center;position:relative}
+.hero h1{font-family:var(--serif);font-weight:600;letter-spacing:.18em;font-size:clamp(46px,11vw,104px);color:var(--bone);line-height:.96}
+.hero h1 em{color:var(--phosphor);font-style:normal}
+.hero .tag{font-family:var(--serif);font-style:italic;font-size:clamp(16px,2.4vw,22px);color:#8a917f;margin:18px auto 4px;max-width:580px;line-height:1.5}
+.hero .sub{font-size:11px;letter-spacing:.12em;color:var(--phosphor-dim);text-transform:uppercase;margin-top:14px}
+.hero .cta{display:flex;gap:12px;justify-content:center;margin-top:34px;flex-wrap:wrap}
+.hero .cta .btn{padding:12px 26px;font-size:12px}
+.scanline{height:1px;background:linear-gradient(90deg,transparent,var(--phosphor-dim),transparent);margin:0 auto;max-width:520px;opacity:.5}
+
+/* ---------- sections ---------- */
+section{padding:54px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--serif);font-weight:600;font-size:clamp(26px,4vw,36px);letter-spacing:.02em;color:var(--bone);line-height:1.08;margin:6px 0 4px}
+h2 em{color:var(--phosphor);font-style:italic}
+.lead{font-family:var(--serif);font-style:italic;font-size:16px;color:#8a917f;margin:10px 0 26px;max-width:640px}
+p{font-size:13.5px;line-height:1.9;color:#c2bcab;margin-bottom:14px;max-width:680px}
+p b{color:var(--phosphor);font-weight:500}
+code{font-family:var(--mono);font-size:12px;color:var(--amber);background:rgba(232,179,75,.08);padding:1px 5px;border:1px solid #3a3219}
+
+/* ---------- mechanism cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:24px}
+.card{border:1px solid var(--line);background:var(--panel);padding:20px 20px 22px;position:relative;transition:border-color .2s}
+.card:hover{border-color:var(--phosphor-dim)}
+.card .n{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--phosphor-dim)}
+.card h3{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin:6px 0 10px}
+.card p{font-size:12.5px;line-height:1.75;color:#b0aa9a;margin:0;max-width:none}
+
+/* ---------- pipeline ---------- */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:0;margin-top:24px;border:1px solid var(--line);background:var(--panel)}
+.flow .step{flex:1;min-width:150px;padding:18px 16px;border-right:1px solid var(--line);position:relative}
+.flow .step:last-child{border-right:none}
+.flow .step .k{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--phosphor-dim)}
+.flow .step .v{font-family:var(--serif);font-size:18px;color:var(--bone);margin:6px 0 6px}
+.flow .step p{font-size:11.5px;line-height:1.6;color:#8a917f;margin:0;max-width:none}
+@media(max-width:620px){.flow .step{border-right:none;border-bottom:1px solid var(--line)}.flow .step:last-child{border-bottom:none}}
+
+/* ---------- views (tabs) ---------- */
+.views{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}
+@media(max-width:640px){.views{grid-template-columns:1fr}}
+.view{border:1px solid var(--line);background:var(--panel2);padding:18px 20px}
+.view .tab{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink);background:var(--phosphor);display:inline-block;padding:3px 9px;margin-bottom:10px}
+.view h3{font-family:var(--serif);font-size:20px;color:var(--bone);margin-bottom:6px;font-weight:600}
+.view p{font-size:12.5px;line-height:1.7;color:#a9a393;margin:0;max-width:none}
+
+/* ---------- callout ---------- */
+.caveat{border-left:2px solid #5e2c27;padding:16px 0 16px 20px;margin:24px 0 0;background:rgba(232,96,79,.04)}
+.caveat p{color:#c9a39c;font-size:12.5px;margin:0;max-width:none}.caveat p+p{margin-top:10px}
+.quote{font-family:var(--serif);font-style:italic;font-size:clamp(20px,3.4vw,30px);color:var(--bone);line-height:1.35;max-width:720px;margin:8px auto;text-align:center}
+.quote em{color:var(--phosphor);font-style:italic}
+.quote .by{display:block;font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--phosphor-dim);margin-top:18px}
+
+/* ---------- refs ---------- */
+.refs{margin-top:14px;font-size:11.5px;line-height:2;color:#7a8470;max-width:760px}
+.refs div{padding-left:22px;text-indent:-22px}.refs b{color:var(--bone);font-weight:500}
+
+/* ---------- final cta ---------- */
+.final{text-align:center;padding:74px 0}
+.final h2{margin-bottom:8px}
+.final .btn{margin-top:26px;padding:14px 32px;font-size:13px}
+
+footer{border-top:1px solid var(--line);padding:28px 0 40px;font-size:11px;letter-spacing:.06em;color:#5d6657}
+footer .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+footer a{color:var(--phosphor-dim)}footer a:hover{color:var(--phosphor)}
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="brand">PRIMOR<em>DIVM</em></span>
+  <span class="links">
+    <a href="#what" class="hideSm">Premise</a>
+    <a href="#mechanisms" class="hideSm">Mechanisms</a>
+    <a href="#views" class="hideSm">The lab</a>
+    <a href="#science" class="hideSm">Lineage</a>
+    <a class="btn solid" href="lab.html">Enter the lab →</a>
+  </span>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">a falsifiable experiment in artificial life</div>
+    <h1>PRIMOR<em>DIVM</em></h1>
+    <p class="tag">Two species of neural network — one hunting, one fleeing — evolving against each other in real time, under the law of the Red Queen.</p>
+    <div class="sub">recurrent · plastic · topology-evolving brains · runs entirely in your browser</div>
+    <div class="cta">
+      <a class="btn solid" href="lab.html">▶ Enter the laboratory</a>
+      <a class="btn" href="#what">What is this?</a>
+    </div>
+  </div>
+</header>
+
+<div class="scanline"></div>
+
+<!-- WHAT -->
+<section id="what">
+  <div class="wrap">
+    <div class="eyebrow">the premise</div>
+    <h2>A pursuit that <em>never settles</em></h2>
+    <p class="lead">In 1973 Leigh Van Valen proposed the Red Queen: in a world of coevolving rivals, you must keep running just to stay in place. Primordium puts that idea on a track you can watch.</p>
+    <p>A predator and a prey share a wrap-around arena. Neither is programmed to hunt or to flee — each is steered only by its own <b>artificial neural network</b>, and those networks are shaped by nothing but mutation and selection across generations. The predator is a touch faster; the prey a touch more nimble. Every improvement on one side is a new problem for the other.</p>
+    <p>The question the experiment actually tests is sharper than “who wins”. It asks whether the arms race <b>cycles</b> — whether strategies chase each other round in a loop the way real predator and prey do — or whether it just grinds to a stalemate. And it answers with a control, replicate runs, and a statistic, not with a vibe.</p>
+    <div class="quote" style="margin-top:34px">
+      “Now, <em>here</em>, you see, it takes all the running you can do, to keep in the same place.”
+      <span class="by">— the Red Queen, <i>Through the Looking-Glass</i> · Van Valen's namesake, 1973</span>
+    </div>
+  </div>
+</section>
+
+<!-- MECHANISMS -->
+<section id="mechanisms">
+  <div class="wrap">
+    <div class="eyebrow">what's inside a brain</div>
+    <h2>Three mechanisms, none of them <em>designed</em></h2>
+    <p class="lead">The controllers don't start clever. Every capability below has to emerge from the genome — and across ten runs, each one reliably did.</p>
+    <div class="cards">
+      <div class="card">
+        <div class="n">i.</div>
+        <h3>Memory · recurrence</h3>
+        <p>Networks update in discrete time. Any connection that points backward — or loops to itself — carries the last step's activation forward, giving the agent genuine internal state. Recurrence emerged in <b style="color:var(--phosphor)">10/10</b> runs.</p>
+      </div>
+      <div class="card">
+        <div class="n">ii.</div>
+        <h3>Lifetime learning · plasticity</h3>
+        <p>Every synapse carries an evolvable learning rate <code>eta</code>. During an encounter, weights are nudged by reward-modulated Hebbian plasticity — the agent learns <i>within its own lifetime</i>. The rule is inherited; the learned weights are not.</p>
+      </div>
+      <div class="card">
+        <div class="n">iii.</div>
+        <h3>Growing structure · topology</h3>
+        <p>NEAT-style mutation adds nodes and connections under a global innovation registry, with speciation and fitness sharing. Brains start minimal and complexify only when complexity pays. Hidden nodes appeared in <b style="color:var(--phosphor)">9/10</b> runs.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="how">
+  <div class="wrap">
+    <div class="eyebrow">how a generation turns</div>
+    <h2>The loop that does the <em>evolving</em></h2>
+    <p class="lead">No training data, no gradient descent, no objective hand-written beyond “close the distance” / “open it”. Just a tournament repeated thousands of times.</p>
+    <div class="flow">
+      <div class="step"><div class="k">01 · sense</div><div class="v">Perceive</div><p>Each agent reads the relative bearing, distance and motion of its rival across the toroidal world.</p></div>
+      <div class="step"><div class="k">02 · act</div><div class="v">Encounter</div><p>Networks drive turn &amp; thrust over a timed chase. Payoff is continuous and zero-sum — no saturating ceiling.</p></div>
+      <div class="step"><div class="k">03 · score</div><div class="v">Compete</div><p>Every individual is tested against a random sample of the <i>opposing</i> population, so no one overfits a single foe.</p></div>
+      <div class="step"><div class="k">04 · select</div><div class="v">Reproduce</div><p>Fitness-shared selection, mutation of weights, learning rates and topology — then the next generation enters the arena.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- VIEWS -->
+<section id="views">
+  <div class="wrap">
+    <div class="eyebrow">four ways to look</div>
+    <h2>The laboratory has <em>four windows</em></h2>
+    <p class="lead">One self-contained page, no build step, nothing sent anywhere. Each tab is a different lens on the same evolving lineage.</p>
+    <div class="views">
+      <div class="view">
+        <span class="tab">Arena</span>
+        <h3>Watch champions fight</h3>
+        <p>Pit an evolved predator from one generation against prey from another. Lock them to the same generation, or break the diagonal to expose the Red Queen directly.</p>
+      </div>
+      <div class="view">
+        <span class="tab">Laboratory</span>
+        <h3>Run the real test</h3>
+        <p>A pre-registered hypothesis, coevolution vs a frozen-target control, replicate runs, and a 20 000-shuffle permutation test that prints a verdict — including “no effect”.</p>
+      </div>
+      <div class="view">
+        <span class="tab">Brain</span>
+        <h3>Open the genome</h3>
+        <p>An actual evolved controller, drawn live: excitatory and inhibitory edges, dashed recurrent loops, ringed plastic synapses, node brightness tracking real activation.</p>
+      </div>
+      <div class="view">
+        <span class="tab">Monograph</span>
+        <h3>Read the methods</h3>
+        <p>A short field write-up: the mechanisms, the fitness, why this control, the two measurement lenses that can disagree — and an honest account of what the experiment is <i>not</i>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCIENCE -->
+<section id="science">
+  <div class="wrap">
+    <div class="eyebrow">honest framing</div>
+    <h2>A reproduction, not a <em>discovery</em></h2>
+    <p>Primordium is deliberately modest about its claims. Cliff &amp; Miller coevolved recurrent pursuit/evasion networks and built CIAO plots three decades ago; this rebuilds that lineage in miniature, in a browser, so anyone can run it. Population sizes and mutation rates are hand-tuned for tractability, not derived — and the code does not tune itself toward significance.</p>
+    <div class="caveat">
+      <p><b style="color:#e8908a">On honest reporting.</b> Coevolution frequently <i>fails</i> to produce clean cycling — collapsing into disengagement or “mediocre stable states”. A null result here is a real outcome, not a broken instrument. The verdict is whatever the data say.</p>
+    </div>
+    <h3 style="font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin:30px 0 6px">Lineage of the methods</h3>
+    <div class="refs">
+      <div>Van Valen, L. <b>A New Evolutionary Law.</b> <i>Evolutionary Theory</i> 1: 1–30, 1973. (The Red Queen.)</div>
+      <div>Cliff, D. &amp; Miller, G. F. <b>Tracking the Red Queen.</b> <i>ECAL</i> 1995, 200–218. (CIAO plots; coevolved recurrent pursuit/evasion nets.)</div>
+      <div>Stanley, K. O. &amp; Miikkulainen, R. <b>Evolving Neural Networks through Augmenting Topologies (NEAT).</b> <i>Evolutionary Computation</i> 10(2): 99–127, 2002.</div>
+      <div>Soltoggio, A. et al. <b>Evolutionary Advantages of Neuromodulated Plasticity.</b> <i>ALIFE XI</i>, 2008. (And “Born to Learn”, <i>Neural Networks</i>, 2018.)</div>
+      <div>Ficici, S. G. &amp; Pollack, J. B. <b>Challenges in Coevolutionary Learning.</b> <i>Artificial Life VI</i>, 1998. (Mediocre stable states.)</div>
+      <div>Yaeger, L. <b>PolyWorld: Life in a New Context.</b> <i>Artificial Life III</i>, 1994. (The spiritual ancestor.)</div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="wrap">
+    <div class="eyebrow">no install · no signup · ~30 seconds for a full run</div>
+    <h2>Seed a lineage and <em>watch it run</em>.</h2>
+    <p style="margin:10px auto 0;text-align:center">Open the lab, hit <span class="phos">New lineage</span>, and let the first champions evolve.</p>
+    <a class="btn solid" href="lab.html">▶ Enter the laboratory</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>PRIMORDIUM · predator–prey coevolution · MIT licensed · runs 100% client-side</span>
+    <span><a href="lab.html">Lab</a> &nbsp;·&nbsp; <a href="README.md">Readme</a> &nbsp;·&nbsp; <a href="#science">References</a></span>
+  </div>
+</footer>
+
+</body>
+</html>

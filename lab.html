@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRIMORDIUM — a coevolution experiment</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070b08; --panel:#0c120e; --panel2:#101712; --line:#1d2a20;
+  --phosphor:#8df2ae; --phosphor-dim:#3e6a4d; --amber:#e8b34b; --blood:#e8604f;
+  --bone:#d8d2c2; --serif:'Cormorant Garamond',Georgia,serif; --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--ink);color:var(--bone);font-family:var(--mono);overflow:hidden;position:relative}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:80;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:81;
+  background:radial-gradient(ellipse at 50% 40%,transparent 58%,rgba(0,0,0,.5) 100%)}
+.app{display:flex;flex-direction:column;height:100vh}
+header{display:flex;align-items:baseline;gap:16px;padding:13px 22px 0;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0d130f,var(--ink))}
+header h1{font-family:var(--serif);font-weight:600;letter-spacing:.2em;font-size:24px;color:var(--bone)}
+header h1 em{color:var(--phosphor);font-style:normal}
+header .sub{font-size:10.5px;color:var(--phosphor-dim);letter-spacing:.1em;text-transform:uppercase;max-width:420px;line-height:1.5}
+header .tabs{margin-left:auto;display:flex;gap:2px;align-self:flex-end}
+.tab{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;background:transparent;color:var(--phosphor-dim);border:1px solid transparent;border-bottom:none;padding:9px 16px;cursor:pointer;transition:all .15s}
+.tab:hover{color:var(--phosphor)}
+.tab.active{color:var(--ink);background:var(--phosphor)}
+main{flex:1;overflow:hidden;position:relative}
+.panel{display:none;height:100%}
+.panel.active{display:block}
+button.act{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;background:transparent;color:var(--phosphor);border:1px solid var(--phosphor-dim);padding:7px 14px;cursor:pointer;transition:all .15s}
+button.act:hover{background:var(--phosphor);color:var(--ink)}
+button.act.amber{color:var(--amber);border-color:#5a4a26}
+button.act.amber:hover{background:var(--amber);color:var(--ink)}
+button.act:disabled{opacity:.4;cursor:not-allowed}
+button.act:disabled:hover{background:transparent;color:var(--phosphor)}
+input[type=range]{accent-color:var(--phosphor);height:3px;width:100%}
+h3.sec{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+#tab-arena{display:grid;grid-template-columns:1fr 320px}
+.arena-stage{position:relative;border-right:1px solid var(--line);background:var(--panel)}
+#arena{display:block;width:100%;height:100%}
+.arena-stage .tag{position:absolute;font-size:10px;letter-spacing:.1em;background:rgba(7,11,8,.72);border:1px solid var(--line);padding:4px 8px;pointer-events:none}
+.arena-side{background:var(--panel2);padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.ctl{display:flex;flex-direction:column;gap:6px;font-size:11px}
+.ctl .rowlab{display:flex;justify-content:space-between;color:#8a917f;letter-spacing:.06em}
+.ctl .rowlab b{color:var(--amber);font-weight:500}
+.note{line-height:1.7;color:#7c856f;font-family:var(--serif);font-size:13.5px;font-style:italic}
+.outcome{font-size:12px;line-height:1.7;border:1px solid var(--line);padding:10px 12px;background:rgba(0,0,0,.2)}
+.outcome b{color:var(--phosphor)} .outcome .c{color:var(--blood)} .outcome .s{color:var(--phosphor)}
+.intransitive{color:var(--amber);line-height:1.6;font-style:italic;font-family:var(--serif);font-size:13px;min-height:18px}
+#tab-lab{display:grid;grid-template-columns:300px 1fr;height:100%}
+.lab-ctrl{background:var(--panel2);border-right:1px solid var(--line);padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.lab-main{overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:20px}
+.field{display:flex;flex-direction:column;gap:5px;font-size:11px}
+.field label{color:#8a917f;letter-spacing:.06em}
+.field input{background:var(--ink);border:1px solid var(--line);color:var(--bone);font-family:var(--mono);font-size:12px;padding:6px 8px}
+.hyp{border:1px solid var(--line);padding:12px 14px;background:rgba(0,0,0,.2);font-size:11.5px;line-height:1.7}
+.hyp b{color:var(--phosphor);font-weight:500}.hyp .h0{color:#9aa28c}.hyp .h1{color:var(--amber)}
+#progWrap{display:none;flex-direction:column;gap:6px}
+#progTrack{height:5px;background:var(--line);overflow:hidden}
+#progBar{height:100%;width:0;background:var(--phosphor);transition:width .2s}
+#progLabel{font-size:10.5px;color:var(--phosphor-dim);letter-spacing:.08em}
+.lab-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.card{border:1px solid var(--line);background:var(--panel);padding:14px 16px}
+.card canvas{width:100%;display:block;background:rgba(0,0,0,.25);border:1px solid var(--line)}
+.card .cap{font-size:10.5px;color:#7c856f;line-height:1.6;margin-top:8px}
+.legend{display:flex;gap:14px;font-size:10.5px;margin-top:6px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px}
+.swatch{width:10px;height:3px;display:inline-block}
+.verdict{border:1px solid var(--phosphor-dim);background:rgba(141,242,174,.04);padding:16px 18px}
+.verdict.null{border-color:#5a4a26;background:rgba(232,179,75,.04)}
+.verdict .lab{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--phosphor-dim);margin-bottom:8px}
+.verdict .big{font-family:var(--serif);font-size:21px;line-height:1.25;color:var(--bone);margin-bottom:10px}
+.verdict .big em{color:var(--phosphor);font-style:italic}.verdict.null .big em{color:var(--amber)}
+.verdict p{font-size:12px;line-height:1.8;color:#b8b2a2}
+.statline{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:11.5px;margin-top:10px;color:#8a917f}
+.statline b{color:var(--amber);font-weight:500}
+.placeholder{color:#5d6657;font-style:italic;font-family:var(--serif);font-size:15px;padding:40px 0;text-align:center}
+#tab-brain{display:grid;grid-template-columns:1fr 300px}
+.brain-stage{border-right:1px solid var(--line);background:var(--panel);position:relative}
+#brainCanvas{display:block;width:100%;height:100%}
+.brain-side{background:var(--panel2);padding:18px;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+select{background:var(--ink);border:1px solid var(--line);color:var(--bone);font-family:var(--mono);font-size:12px;padding:6px 8px;width:100%}
+.bstats{font-size:11.5px;line-height:1.95;color:#8a917f}.bstats b{color:var(--amber);font-weight:500}
+.blegend{font-size:10.5px;line-height:1.85;color:#7c856f}.blegend i{font-style:normal}
+#tab-mono{overflow-y:auto;height:100%}
+.mono-wrap{max-width:780px;margin:0 auto;padding:40px 40px 70px}
+.mono-wrap .eyebrow{font-size:10px;letter-spacing:.3em;color:var(--phosphor-dim);text-transform:uppercase}
+.mono-wrap h2{font-family:var(--serif);font-weight:600;font-size:32px;letter-spacing:.03em;color:var(--bone);line-height:1.06;margin:4px 0}
+.mono-wrap h2 em{color:var(--phosphor);font-style:italic}
+.mono-wrap .deck{font-family:var(--serif);font-style:italic;font-size:16px;color:#8a917f;margin:8px 0 22px;border-bottom:1px solid var(--line);padding-bottom:18px}
+.mono-wrap h3{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);margin:24px 0 9px;display:flex;gap:10px;align-items:baseline}
+.mono-wrap h3 .num{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--phosphor-dim);letter-spacing:0}
+.mono-wrap p{font-size:13px;line-height:1.85;color:#c2bcab;margin-bottom:12px}
+.mono-wrap p b{color:var(--phosphor);font-weight:500}
+.mono-wrap code{font-family:var(--mono);font-size:12px;color:var(--amber);background:rgba(232,179,75,.08);padding:1px 5px;border:1px solid #3a3219}
+.mono-wrap .caveat{border-left:2px solid #5e2c27;padding:12px 0 12px 18px;margin:8px 0;background:rgba(232,96,79,.04)}
+.mono-wrap .caveat p{color:#c9a39c;font-size:12.5px;margin:0}.mono-wrap .caveat p+p{margin-top:8px}
+.mono-wrap .liveres{border:1px solid var(--phosphor-dim);padding:12px 14px;background:rgba(141,242,174,.04);font-size:12px;line-height:1.7;color:#b8b2a2}
+.mono-wrap .refs{margin-top:6px;font-size:11px;line-height:1.95;color:#7a8470}
+.mono-wrap .refs div{padding-left:20px;text-indent:-20px}.mono-wrap .refs b{color:var(--bone);font-weight:500}
+.splash{position:fixed;inset:0;z-index:90;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.splash .t{font-family:var(--serif);font-size:30px;letter-spacing:.2em;color:var(--bone)}
+.splash .t em{color:var(--phosphor);font-style:normal}
+.splash .m{font-size:11px;letter-spacing:.14em;color:var(--phosphor-dim);text-transform:uppercase}
+.splash .dots{font-size:11px;color:var(--amber);letter-spacing:.3em}
+</style>
+</head>
+<body>
+<div class="splash" id="splash">
+  <div class="t">PRIMOR<em>DIVM</em></div>
+  <div class="m">seeding the first lineage — evolving champions</div>
+  <div class="dots" id="splashDots">◦ ◦ ◦</div>
+</div>
+
+<div class="app">
+  <header>
+    <h1>PRIMOR<em>DIVM</em></h1>
+    <div class="sub">a falsifiable experiment in predator–prey coevolution · recurrent, plastic, topology-evolving brains</div>
+    <div class="tabs">
+      <button class="tab active" data-tab="arena">Arena</button>
+      <button class="tab" data-tab="lab">Laboratory</button>
+      <button class="tab" data-tab="brain">Brain</button>
+      <button class="tab" data-tab="mono">Monograph</button>
+    </div>
+  </header>
+  <main>
+    <!-- ARENA -->
+    <section class="panel active" id="tab-arena">
+      <div class="arena-stage">
+        <canvas id="arena"></canvas>
+        <div class="tag" style="left:14px;top:12px;color:var(--blood)">▲ PREDATOR · gen <span id="arGi">0</span></div>
+        <div class="tag" style="left:14px;top:38px;color:var(--phosphor)">◈ PREY · gen <span id="arGj">0</span></div>
+      </div>
+      <div class="arena-side">
+        <div><h3 class="sec">Live encounter</h3>
+          <div class="note">Two evolved champions, each steered only by its own neural network. Drag the dials to pit a predator from one generation against prey from another — the heart of the Red Queen test.</div>
+        </div>
+        <div class="ctl">
+          <div class="rowlab"><span>Predator generation</span><b id="giVal">0</b></div>
+          <input type="range" id="giSlider" min="0" max="0" value="0">
+          <div class="rowlab"><span>Prey generation</span><b id="gjVal">0</b></div>
+          <input type="range" id="gjSlider" min="0" max="0" value="0">
+          <label style="display:flex;gap:7px;align-items:center;color:#8a917f;margin-top:4px"><input type="checkbox" id="lockDiag" checked> lock to same generation</label>
+        </div>
+        <div class="outcome" id="arenaOutcome">—</div>
+        <div class="intransitive" id="arenaIntr"></div>
+        <div style="display:flex;gap:8px"><button class="act" id="playPause">Pause</button><button class="act amber" id="newWorld">⟳ New lineage</button></div>
+      </div>
+    </section>
+
+    <!-- LAB -->
+    <section class="panel" id="tab-lab">
+      <div class="lab-ctrl">
+        <div><h3 class="sec">Pre-registered test</h3>
+          <div class="hyp">
+            <b>H1.</b> Under live coevolution, the prey's evasion-strategy trait <span class="h1">oscillates</span> (cyclicity) more than under a control where prey adapt to a <i>frozen</i> predator panel.<br><br>
+            <b>H0.</b> <span class="h0">No difference</span>: coevolution yields no more cycling than directed convergence.<br><br>
+            <b>Statistic:</b> depth of the deepest negative auto-correlation trough of the detrended trait series (lags 1–10). <b>Test:</b> two-sided permutation test, 20 000 shuffles. <b>Decide</b> before running; the verdict is computed live.
+          </div>
+        </div>
+        <div class="field"><label>Generations per run</label><input id="genInput" type="number" value="45" min="20" max="120"></div>
+        <div class="field"><label>Replicates per condition</label><input id="repInput" type="number" value="8" min="3" max="24"></div>
+        <button class="act" id="runExp">▶ Run experiment</button>
+        <div id="progWrap"><div id="progTrack"><div id="progBar"></div></div><div id="progLabel">—</div></div>
+        <div class="note" style="font-size:12.5px">Heavier settings give tighter confidence intervals but take longer. Everything runs in your browser; nothing is sent anywhere.</div>
+      </div>
+      <div class="lab-main" id="labMain">
+        <div class="placeholder" id="labPlaceholder">No experiment run yet. Set the parameters and press <span style="color:var(--phosphor)">Run experiment</span>.<br>A typical 45×8 run takes roughly half a minute.</div>
+        <div id="labResults" style="display:none;flex-direction:column;gap:20px">
+          <div class="verdict" id="verdict"></div>
+          <div class="lab-grid">
+            <div class="card"><h3 class="sec">Strategy trajectories (example runs)</h3><canvas id="trajChart"></canvas>
+              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevolution</span><span><i class="swatch" style="background:var(--amber)"></i>control (frozen target)</span></div>
+              <div class="cap">Prey evasion-alignment of the champion each generation. Oscillation here is the signal under test.</div></div>
+            <div class="card"><h3 class="sec">Cyclicity by replicate</h3><canvas id="cycChart"></canvas>
+              <div class="legend"><span><i class="swatch" style="background:var(--phosphor)"></i>coevo</span><span><i class="swatch" style="background:var(--amber)"></i>control</span><span>— median</span></div>
+              <div class="cap">Each dot is one replicate. The permutation test asks whether these two clouds differ.</div></div>
+          </div>
+          <div class="card"><h3 class="sec">CIAO — current predators vs ancestral prey (one coevo run)</h3>
+            <canvas id="ciaoChart"></canvas>
+            <div class="cap">Predator generation (rows, top→bottom) × prey generation (cols, left→right); brighter = predator wins. A clean diagonal gradient means transitive progress; mottled, non-monotone bands mean <span style="color:var(--amber)">intransitivity</span> — a newer predator losing to an older prey — the fingerprint of Red Queen cycling. Intransitivity index: <b id="ciaoScore" style="color:var(--amber)">—</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BRAIN -->
+    <section class="panel" id="tab-brain">
+      <div class="brain-stage"><canvas id="brainCanvas"></canvas></div>
+      <div class="brain-side">
+        <div><h3 class="sec">Evolved controller</h3>
+          <div class="note">An actual genome from the current lineage. Topology, recurrence and plasticity all arose by mutation and selection — none were designed.</div></div>
+        <select id="brainWho"><option value="prey">Prey champion</option><option value="pred">Predator champion</option></select>
+        <div class="ctl"><div class="rowlab"><span>Generation</span><b id="brainGenVal">0</b></div><input type="range" id="brainGen" min="0" max="0" value="0"></div>
+        <div class="bstats" id="brainStats"></div>
+        <div class="blegend">
+          <i style="color:var(--phosphor)">▬</i> excitatory &nbsp; <i style="color:var(--blood)">▬</i> inhibitory<br>
+          <i style="color:var(--amber)">┄ dashed</i> = recurrent / self-loop (memory)<br>
+          <i style="color:#fff">◦ ring</i> = plastic synapse (lifetime learning)<br>
+          node brightness = its live activation.
+        </div>
+      </div>
+    </section>
+
+    <!-- MONOGRAPH -->
+    <section class="panel" id="tab-mono">
+      <div class="mono-wrap">
+        <div class="eyebrow">A field monograph · methods &amp; honest limits</div>
+        <h2>Does predator–prey coevolution <em>cycle</em>?</h2>
+        <div class="deck">A self-contained, reproducible experiment — not a discovery. It implements established mechanisms to test one falsifiable question, with a control, replicates, and a verdict computed from the data rather than asserted.</div>
+
+        <div class="liveres" id="monoResult">Run the experiment in the Laboratory tab to populate the live result here.</div>
+
+        <h3><span class="num">i.</span> The three mechanisms (and that they really emerge)</h3>
+        <p><b>Recurrence / memory.</b> Each controller is updated synchronously in discrete time; any connection that points "backward" (or a self-loop) carries the previous step's activation forward, giving genuine internal state. <b>Within-lifetime learning.</b> Every synapse owns an evolvable learning-rate gene <code>eta</code>; weights are nudged during the encounter by reward-modulated Hebbian plasticity, where the neuromodulatory signal is the agent's instantaneous fitness gradient (closing distance for the predator, opening it for the prey). These lifetime changes are <i>not</i> inherited — evolution acts on the rule, not its results. <b>Evolvable topology.</b> NEAT-style structural mutation adds nodes and connections under a global innovation registry, with compatibility-distance speciation and explicit fitness sharing. Across ten runs these were not hypothetical: hidden nodes appeared in 9/10, recurrence in 10/10, plastic synapses in 10/10.</p>
+
+        <h3><span class="num">ii.</span> The task and the fitness</h3>
+        <p>A toroidal pursuit–evasion arena. The predator is slightly faster; the prey slightly more agile. Payoff is continuous and zero-sum — a faster capture scores the predator higher, and merely staying close earns partial credit — so there is always a selection gradient and no saturating ceiling. Each individual is scored against a random sample of the opposing population over several encounters with randomized starting geometry, to discourage overfitting to one opponent.</p>
+
+        <h3><span class="num">iii.</span> Why a control, and which one</h3>
+        <p>Cliff &amp; Miller's central warning is that under the Red Queen, naïve fitness curves mislead: a population can improve while its measured score stays flat, because the opponent improves too. So a single coevolving run proves nothing about cycling. The control here holds the predators <b>frozen</b> (a competent panel harvested from a warm-up run) while the prey still evolve. Same observable, same selection strength — but a <i>static</i> target. The clean prediction: prey should <i>converge</i> against a fixed challenge and <i>cycle</i> only when the target moves. The difference between conditions is the evidence.</p>
+
+        <h3><span class="num">iv.</span> Two lenses, which can disagree</h3>
+        <p>The <b>primary</b> test tracks a one-dimensional prey trait (evasion alignment) and asks whether it oscillates more under coevolution. The <b>secondary</b> lens is a CIAO matrix pitting every predator generation against every prey generation; non-monotone bands reveal intransitive dominance directly. These can disagree — a rich intransitivity in the matrix that a single scalar trait fails to capture is itself a finding about how much a low-dimensional behavioural summary can hide.</p>
+
+        <div class="caveat">
+          <p><b>What this is not.</b> It is not a novel result. Cliff &amp; Miller coevolved recurrent pursuit/evasion networks and built CIAO plots three decades ago; this reproduces that lineage in miniature. Population sizes, mutation rates and arena constants are hand-tuned for tractability in a browser, not derived. With a handful of replicates the permutation p-value is noisy; treat a single run as suggestive, not decisive, and raise the replicate count to tighten it.</p>
+          <p><b>On honest reporting.</b> The verdict is whatever the data say — including "no effect." Coevolution frequently fails to produce clean cycling, collapsing instead into disengagement or "mediocre stable states" (Ficici &amp; Pollack). A null here is a real outcome, not a failure of the instrument, and the code does not tune itself toward significance.</p>
+        </div>
+
+        <h3><span class="num">v.</span> Lineage of the methods</h3>
+        <div class="refs">
+          <div>Van Valen, L. <b>A New Evolutionary Law.</b> Evolutionary Theory 1: 1–30, 1973. (The Red Queen.)</div>
+          <div>Cliff, D. &amp; Miller, G. F. <b>Tracking the Red Queen: Measurements of Adaptive Progress in Co-Evolutionary Simulations.</b> ECAL 1995, pp. 200–218. (CIAO plots; coevolved recurrent pursuit/evasion nets.)</div>
+          <div>Stanley, K. O. &amp; Miikkulainen, R. <b>Evolving Neural Networks through Augmenting Topologies (NEAT).</b> Evolutionary Computation 10(2): 99–127, 2002.</div>
+          <div>Soltoggio, A., Bullinaria, J. A., Mattiussi, C., Dürr, P. &amp; Floreano, D. <b>Evolutionary Advantages of Neuromodulated Plasticity in Dynamic, Reward-based Scenarios.</b> ALIFE XI, 2008. See also Soltoggio, Stanley &amp; Risi, <b>Born to Learn (EPANNs)</b>, Neural Networks, 2018.</div>
+          <div>Ficici, S. G. &amp; Pollack, J. B. <b>Challenges in Coevolutionary Learning: arms-race dynamics, open-endedness, and mediocre stable states.</b> Artificial Life VI, 1998.</div>
+          <div>Yaeger, L. <b>PolyWorld: Life in a New Context.</b> Artificial Life III, 1994. (Neural-net agents in an ecology — the spiritual ancestor.)</div>
+        </div>
+        <p style="margin-top:14px;font-size:11.5px;color:#6f7a68">Citations verified against primary/reliable sources. My knowledge has a cutoff; newer work past it would not be reflected here, and exact page references should be double-checked against the originals before formal use.</p>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+/* ============================================================
+   PRIMORDIUM ENGINE  (shared by Node tests and the browser app)
+   ------------------------------------------------------------
+   Implements, as faithfully as a compact codebase allows:
+     • NEAT-style topology evolution (innovation-tracked add-node /
+       add-connection mutation + compatibility-distance speciation
+       with explicit fitness sharing). Reproduction is mutation-only
+       (no crossover) — an honest simplification of NEAT.
+     • Recurrent controllers (synchronous discrete-time update; any
+       cyclic / self connection yields genuine internal memory).
+     • Within-lifetime learning via reward-modulated Hebbian
+       plasticity (per-synapse evolvable learning rate `eta`;
+       neuromodulatory signal = the agent's instantaneous fitness
+       gradient). Plastic changes are NOT inherited (Darwinian).
+     • A pursuit/evasion encounter as the coevolutionary fitness.
+     • A pre-registered cycling statistic + permutation test that
+       contrasts live coevolution against a frozen-opponent control.
+   ============================================================ */
+(function (root) {
+"use strict";
+
+/* ---------- tiny deterministic RNG (mulberry32) so runs reproduce ---------- */
+function RNG(seed) { this.s = seed >>> 0; }
+RNG.prototype.next = function () {
+  this.s |= 0; this.s = (this.s + 0x6D2B79F5) | 0;
+  let t = Math.imul(this.s ^ (this.s >>> 15), 1 | this.s);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+RNG.prototype.range = function (a, b) { return a + (b - a) * this.next(); };
+RNG.prototype.gauss = function () { // Box–Muller
+  let u = 1 - this.next(), v = this.next();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+};
+RNG.prototype.int = function (n) { return (this.next() * n) | 0; };
+
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+
+/* ---------- network constants ---------- */
+const NIN = 7;     // 0 bias, 1 sinBearing, 2 cosBearing, 3 proximity, 4 ownSpeed, 5 sinRel, 6 cosRel
+const NOUT = 2;    // turn, thrust
+const I0 = 0, O0 = NIN, H0 = NIN + NOUT;   // id ranges
+const WMAX = 6;
+
+/* ---------- global innovation registry ---------- */
+function Innov() { this.map = new Map(); this.c = 0; this.nodeC = H0; }
+Innov.prototype.conn = function (from, to) {
+  const k = from + ":" + to;
+  let v = this.map.get(k);
+  if (v === undefined) { v = this.c++; this.map.set(k, v); }
+  return v;
+};
+Innov.prototype.node = function () { return this.nodeC++; };
+
+/* ---------- genome ---------- */
+function Genome() { this.nodes = []; this.conns = []; }
+Genome.minimal = function (innov, rng) {
+  const g = new Genome();
+  for (let i = 0; i < NIN; i++) g.nodes.push({ id: I0 + i, type: 'in' });
+  for (let o = 0; o < NOUT; o++) g.nodes.push({ id: O0 + o, type: 'out' });
+  // start fully connected input->output (classic NEAT seed)
+  for (let i = 0; i < NIN; i++) for (let o = 0; o < NOUT; o++)
+    g.conns.push({ innov: innov.conn(I0 + i, O0 + o), from: I0 + i, to: O0 + o,
+                   w: rng.gauss(), eta: 0, enabled: true });
+  return g;
+};
+Genome.prototype.clone = function () {
+  const g = new Genome();
+  g.nodes = this.nodes.map(n => ({ id: n.id, type: n.type }));
+  g.conns = this.conns.map(c => ({ innov: c.innov, from: c.from, to: c.to, w: c.w, eta: c.eta, enabled: c.enabled }));
+  return g;
+};
+Genome.prototype.hasNode = function (id) { for (const n of this.nodes) if (n.id === id) return true; return false; };
+Genome.prototype.hasConn = function (from, to) { for (const c of this.conns) if (c.from === from && c.to === to) return true; return false; };
+
+/* ---------- mutation ---------- */
+function mutate(g, innov, rng, P) {
+  // weight & plasticity perturbation
+  for (const c of g.conns) {
+    if (rng.next() < P.wMutRate) {
+      if (rng.next() < 0.1) c.w = rng.gauss();
+      else c.w = clamp(c.w + rng.gauss() * P.wStep, -WMAX, WMAX);
+    }
+    if (rng.next() < P.etaMutRate) {
+      c.eta = clamp(c.eta + rng.gauss() * 0.02, -0.2, 0.2);
+    }
+    if (rng.next() < 0.01) c.enabled = !c.enabled;
+  }
+  // add connection (may be recurrent — that is allowed and gives memory)
+  if (rng.next() < P.addConn) {
+    const outs = g.nodes.filter(n => n.type !== 'in');         // targets: hidden or out
+    const all  = g.nodes;                                      // sources: any
+    for (let tries = 0; tries < 12; tries++) {
+      const from = all[rng.int(all.length)].id;
+      const to   = outs[rng.int(outs.length)].id;
+      if (from === to && rng.next() < 0.6) continue;           // allow occasional self-loop (memory)
+      if (g.hasConn(from, to)) continue;
+      g.conns.push({ innov: innov.conn(from, to), from, to,
+                     w: rng.gauss(), eta: 0, enabled: true });
+      break;
+    }
+  }
+  // add node (split an enabled connection)
+  if (rng.next() < P.addNode) {
+    const en = g.conns.filter(c => c.enabled);
+    if (en.length) {
+      const c = en[rng.int(en.length)];
+      c.enabled = false;
+      const nid = innov.node();
+      g.nodes.push({ id: nid, type: 'hid' });
+      g.conns.push({ innov: innov.conn(c.from, nid), from: c.from, to: nid, w: 1, eta: 0, enabled: true });
+      g.conns.push({ innov: innov.conn(nid, c.to), from: nid, to: c.to, w: c.w, eta: 0, enabled: true });
+    }
+  }
+  return g;
+}
+
+/* ---------- compatibility distance (NEAT speciation) ---------- */
+function compat(a, b, P) {
+  const ma = new Map(); for (const c of a.conns) ma.set(c.innov, c);
+  const mb = new Map(); for (const c of b.conns) mb.set(c.innov, c);
+  let match = 0, wdiff = 0, disj = 0;
+  for (const [k, c] of ma) { if (mb.has(k)) { match++; wdiff += Math.abs(c.w - mb.get(k).w); } else disj++; }
+  for (const [k] of mb) if (!ma.has(k)) disj++;
+  const N = Math.max(ma.size, mb.size, 1);
+  return P.c1 * disj / N + P.c3 * (match ? wdiff / match : 0);
+}
+
+/* ---------- phenotype: synchronous recurrent network + plasticity ---------- */
+function Net(g) {
+  // stable node order: inputs, outputs, hidden(by id)
+  const ids = g.nodes.map(n => n.id).sort((x, y) => x - y);
+  this.index = new Map(); ids.forEach((id, i) => this.index.set(id, i));
+  this.N = ids.length;
+  this.ids = ids;
+  this.isInput = new Uint8Array(this.N);
+  for (const n of g.nodes) if (n.type === 'in') this.isInput[this.index.get(n.id)] = 1;
+  // compile enabled connections into flat arrays (to, from indices, base weight, eta)
+  const cs = g.conns.filter(c => c.enabled && this.index.has(c.from) && this.index.has(c.to));
+  this.cFrom = new Int32Array(cs.length);
+  this.cTo   = new Int32Array(cs.length);
+  this.cW0   = new Float32Array(cs.length);   // base (inherited) weights
+  this.cEta  = new Float32Array(cs.length);
+  cs.forEach((c, i) => {
+    this.cFrom[i] = this.index.get(c.from);
+    this.cTo[i]   = this.index.get(c.to);
+    this.cW0[i]   = c.w; this.cEta[i] = c.eta;
+  });
+  this.act  = new Float32Array(this.N);
+  this.prev = new Float32Array(this.N);
+  this.cW   = new Float32Array(this.cW0);     // plastic working weights
+  this.oTurn = this.index.get(O0); this.oThrust = this.index.get(O0 + 1);
+}
+Net.prototype.reset = function () {
+  this.act.fill(0); this.prev.fill(0); this.cW.set(this.cW0);
+};
+/* one synchronous step. `inputs` length NIN (id order 0..NIN-1). `mod` = neuromodulator. */
+Net.prototype.step = function (inputs, mod) {
+  const N = this.N, prev = this.prev, act = this.act;
+  prev.set(act);
+  for (let i = 0; i < NIN; i++) prev[i] = inputs[i];   // inputs known this step
+  // accumulate
+  const sum = act; sum.fill(0);
+  const cF = this.cFrom, cT = this.cTo, cW = this.cW, M = cF.length;
+  for (let k = 0; k < M; k++) sum[cT[k]] += prev[cF[k]] * cW[k];
+  for (let i = 0; i < N; i++) {
+    if (this.isInput[i]) act[i] = inputs[i];
+    else act[i] = Math.tanh(sum[i]);
+  }
+  // reward-modulated Hebbian plasticity on working weights (not inherited)
+  if (mod !== 0) {
+    for (let k = 0; k < M; k++) {
+      const eta = this.cEta[k];
+      if (eta !== 0) {
+        let w = cW[k] + eta * mod * prev[cF[k]] * act[cT[k]];
+        cW[k] = w > WMAX ? WMAX : w < -WMAX ? -WMAX : w;
+      }
+    }
+  }
+  return this;
+};
+Net.prototype.turn   = function () { return this.act[this.oTurn]; };
+Net.prototype.thrust = function () { return this.act[this.oThrust]; };
+
+/* ============================================================
+   PURSUIT / EVASION ENCOUNTER  (toroidal unit arena)
+   predator: faster top speed, less agile.  prey: nimble.
+   returns {pred, prey} fitness in [0,1]-ish.
+   ============================================================ */
+const ENC = {
+  T: 210, dt: 1,
+  predSpeed: 0.0138, preySpeed: 0.0122,
+  predTurn: 0.21, preyTurn: 0.37,
+  capture: 0.026, startDist: 0.36,
+  modGain: 60
+};
+function torDelta(ax, ay, bx, by) {
+  let dx = bx - ax, dy = by - ay;
+  if (dx > 0.5) dx -= 1; else if (dx < -0.5) dx += 1;
+  if (dy > 0.5) dy -= 1; else if (dy < -0.5) dy += 1;
+  return [dx, dy, Math.hypot(dx, dy)];
+}
+function senses(self, other, buf) {
+  const [dx, dy, dist] = torDelta(self.x, self.y, other.x, other.y);
+  const bearing = Math.atan2(dy, dx) - self.a;
+  buf[0] = 1;                                  // bias
+  buf[1] = Math.sin(bearing);
+  buf[2] = Math.cos(bearing);
+  buf[3] = 1 / (1 + dist * 12);                // proximity
+  buf[4] = self.v / 0.014;                     // own speed
+  const rel = other.a - self.a;
+  buf[5] = Math.sin(rel);
+  buf[6] = Math.cos(rel);
+  return dist;
+}
+function runEncounter(predNet, preyNet, seedAngle, trace) {
+  predNet.reset(); preyNet.reset();
+  const a0 = seedAngle;
+  const pred = { x: 0.5, y: 0.5, a: a0, v: 0 };
+  const prey = { x: 0.5 + Math.cos(a0) * ENC.startDist, y: 0.5 + Math.sin(a0) * ENC.startDist, a: a0 + Math.PI, v: 0 };
+  prey.x = (prey.x % 1 + 1) % 1; prey.y = (prey.y % 1 + 1) % 1;
+  const ib = new Float32Array(NIN), jb = new Float32Array(NIN);
+  let caughtAt = -1, distSum = 0, prevDist = ENC.startDist;
+  for (let t = 0; t < ENC.T; t++) {
+    const dPred = senses(pred, prey, ib);
+    const dPrey = senses(prey, pred, jb);
+    // neuromodulator = instantaneous fitness gradient (closing good for pred, opening good for prey)
+    const closing = (prevDist - dPred);          // >0 means distance shrank this step
+    const modPred = clamp(closing * ENC.modGain, -1, 1);
+    const modPrey = clamp(-closing * ENC.modGain, -1, 1);
+    predNet.step(ib, modPred);
+    preyNet.step(jb, modPrey);
+    advance(pred, predNet.turn(), predNet.thrust(), ENC.predTurn, ENC.predSpeed);
+    advance(prey, preyNet.turn(), preyNet.thrust(), ENC.preyTurn, ENC.preySpeed);
+    const [, , dist] = torDelta(pred.x, pred.y, prey.x, prey.y);
+    prevDist = dist; distSum += dist;
+    if (trace) trace.push([pred.x, pred.y, prey.x, prey.y]);
+    if (dist < ENC.capture) { caughtAt = t; break; }
+  }
+  const meanDist = distSum / (caughtAt >= 0 ? caughtAt + 1 : ENC.T);
+  // continuous zero-sum payoff: always a gradient (no saturating ceiling).
+  let predFit;
+  if (caughtAt >= 0) predFit = 1 - 0.5 * (caughtAt / ENC.T);     // 0.5..1  (faster catch better)
+  else               predFit = 0.5 * clamp(1 - meanDist / 0.5, 0, 1); // 0..0.5 (staying close better)
+  return { pred: predFit, prey: 1 - predFit, caughtAt, meanDist };
+}
+function advance(b, turn, thrust, turnRate, maxSpeed) {
+  b.a += clamp(turn, -1, 1) * turnRate;
+  b.v = clamp((thrust + 1) * 0.5, 0, 1) * maxSpeed;
+  b.x += Math.cos(b.a) * b.v; b.y += Math.sin(b.a) * b.v;
+  b.x = (b.x % 1 + 1) % 1; b.y = (b.y % 1 + 1) % 1;
+}
+
+/* ---------- behavioral descriptor (opponent-independent probe) ----------
+   primary pre-registered trait = "evasion alignment": correlation between a
+   prey's turn output and the bearing of a probe opponent. Negative ⇒ turns
+   away (evasive); positive ⇒ turns toward. Reported sign-agnostic strength &
+   signed value both available; the trajectory of the SIGNED value over
+   generations is what we test for oscillation.                              */
+const PROBE_BEARINGS = [-2.0, -1.0, -0.4, 0.4, 1.0, 2.0];
+function evasionAlignment(net) {
+  let num = 0, den = 0;
+  const buf = new Float32Array(NIN);
+  for (const bearing of PROBE_BEARINGS) {
+    net.reset();
+    let turn = 0;
+    for (let s = 0; s < 8; s++) {                // let recurrence settle
+      buf[0] = 1; buf[1] = Math.sin(bearing); buf[2] = Math.cos(bearing);
+      buf[3] = 0.5; buf[4] = 0.6; buf[5] = Math.sin(Math.PI); buf[6] = Math.cos(Math.PI);
+      net.step(buf, 0);
+      turn = net.turn();
+    }
+    num += Math.sin(bearing) * turn; den += Math.abs(Math.sin(bearing));
+  }
+  return den ? num / den : 0;     // signed alignment
+}
+/* secondary descriptor: "proteanism" = erraticism of turn output across a
+   moving probe (Cliff & Miller observed prey evolve unpredictable/protean
+   evasion). Higher = more erratic. */
+function proteanIndex(net) {
+  net.reset();
+  const buf = new Float32Array(NIN);
+  const turns = [];
+  for (let s = 0; s < 24; s++) {
+    const bearing = Math.sin(s * 0.7) * 2.5;          // sweeping stimulus
+    buf[0] = 1; buf[1] = Math.sin(bearing); buf[2] = Math.cos(bearing);
+    buf[3] = 0.5; buf[4] = 0.7; buf[5] = Math.sin(Math.PI); buf[6] = Math.cos(Math.PI);
+    net.step(buf, 0);
+    if (s >= 8) turns.push(net.turn());
+  }
+  const m = turns.reduce((a, b) => a + b, 0) / turns.length;
+  let v = 0; for (const t of turns) v += (t - m) ** 2;
+  return Math.sqrt(v / turns.length);
+}
+
+/* ============================================================
+   POPULATION + COEVOLUTION
+   ============================================================ */
+function Population(size, innov, rng, P) {
+  this.P = P; this.innov = innov; this.rng = rng;
+  this.members = [];
+  for (let i = 0; i < size; i++) this.members.push({ g: Genome.minimal(innov, rng), fit: 0 });
+}
+function speciate(members, P, rng) {
+  const species = [];
+  for (const m of members) {
+    let placed = false;
+    for (const s of species) {
+      if (compat(m.g, s.rep, P) < P.compatThresh) { s.members.push(m); placed = true; break; }
+    }
+    if (!placed) species.push({ rep: m.g, members: [m] });
+  }
+  return species;
+}
+function reproduce(pop, rng) {
+  const P = pop.P, members = pop.members;
+  const species = speciate(members, P, rng);
+  // explicit fitness sharing: adjusted fitness = fit / |species|
+  let totalAdj = 0;
+  for (const s of species) {
+    s.adj = 0;
+    for (const m of s.members) { m.adj = m.fit / s.members.length; s.adj += m.adj; }
+    totalAdj += s.adj;
+  }
+  const next = [];
+  const N = members.length;
+  // elitism: carry best overall
+  const best = members.reduce((a, b) => b.fit > a.fit ? b : a, members[0]);
+  next.push({ g: best.g.clone(), fit: 0 });
+  for (const s of species) {
+    let quota = Math.max(0, Math.round((s.adj / (totalAdj || 1)) * (N - 1)));
+    s.members.sort((a, b) => b.fit - a.fit);
+    const cutoff = Math.max(1, Math.ceil(s.members.length * 0.5));   // top half breed
+    for (let q = 0; q < quota && next.length < N; q++) {
+      const parent = s.members[rng.int(cutoff)];
+      next.push({ g: mutate(parent.g.clone(), pop.innov, rng, P), fit: 0 });
+    }
+  }
+  members.sort((a, b) => b.fit - a.fit);
+  const topK = Math.max(1, (N * 0.3) | 0);
+  while (next.length < N) {                 // fill remainder from global top 30%
+    next.push({ g: mutate(members[rng.int(topK)].g.clone(), pop.innov, rng, P), fit: 0 });
+  }
+  pop.members = next.slice(0, N);
+  return species.length;
+}
+
+/* Evaluate predator members against a panel of prey nets (sampled). */
+function evalPredVsPanel(predMembers, predNets, preyNets, rng, P) {
+  for (let pi = 0; pi < predMembers.length; pi++) {
+    let acc = 0, n = 0;
+    for (let k = 0; k < P.opponents; k++) {
+      const oj = rng.int(preyNets.length);
+      for (let e = 0; e < P.encounters; e++) { acc += runEncounter(predNets[pi], preyNets[oj], rng.range(0, Math.PI * 2)).pred; n++; }
+    }
+    predMembers[pi].fit = acc / n;
+  }
+}
+/* Evaluate prey members against a panel of predator nets (sampled). */
+function evalPreyVsPanel(preyMembers, preyNets, predNets, rng, P) {
+  for (let qj = 0; qj < preyMembers.length; qj++) {
+    let acc = 0, n = 0;
+    for (let k = 0; k < P.opponents; k++) {
+      const oi = rng.int(predNets.length);
+      for (let e = 0; e < P.encounters; e++) { acc += runEncounter(predNets[oi], preyNets[qj], rng.range(0, Math.PI * 2)).prey; n++; }
+    }
+    preyMembers[qj].fit = acc / n;
+  }
+}
+
+/* champion = highest fitness member */
+function champ(members) { return members.reduce((a, b) => b.fit > a.fit ? b : a, members[0]); }
+
+/* Harvest a frozen panel of competent predators from a warmup coevolution run.
+   Returns an array of predator genomes (champions sampled across late warmup). */
+function harvestPredatorPanel(seed, gens, P, panelSize) {
+  const rng = new RNG(seed), innov = new Innov();
+  const predPop = new Population(P.pop, innov, rng, P);
+  const preyPop = new Population(P.pop, innov, rng, P);
+  const champs = [];
+  for (let gen = 0; gen < gens; gen++) {
+    const predNets = predPop.members.map(m => new Net(m.g));
+    const preyNets = preyPop.members.map(m => new Net(m.g));
+    evalPredVsPanel(predPop.members, predNets, preyNets, rng, P);
+    evalPreyVsPanel(preyPop.members, preyNets, predNets, rng, P);
+    if (gen >= gens - panelSize) champs.push(champ(predPop.members).g.clone());
+    reproduce(predPop, rng);
+    reproduce(preyPop, rng);
+  }
+  return champs;            // a static, competent, diverse predator panel
+}
+
+/* Run ONE replicate.
+   mode 'coevo'   : predators & prey coevolve.            (moving target)
+   mode 'control' : prey evolve vs a FROZEN predator panel (static target)
+                    -> prediction: prey strategy CONVERGES, not cycles.
+   Both measure the evolving PREY champion trait each generation, so the
+   observable is identical across conditions — only the feedback differs.   */
+function runReplicate(seed, gens, P, mode, frozenPanel) {
+  const rng = new RNG(seed), innov = new Innov();
+  const predPop = new Population(P.pop, innov, rng, P);
+  const preyPop = new Population(P.pop, innov, rng, P);
+  const frozenPredNets = (mode === 'control') ? frozenPanel.map(g => new Net(g)) : null;
+  const preyTrait = [], preyProtean = [], predCatch = [], predChamps = [], preyChamps = [], complexity = [];
+  for (let gen = 0; gen < gens; gen++) {
+    const preyNets = preyPop.members.map(m => new Net(m.g));
+    let predNets;
+    if (mode === 'control') {
+      predNets = frozenPredNets;                              // predators do not evolve
+      evalPreyVsPanel(preyPop.members, preyNets, predNets, rng, P);
+    } else {
+      predNets = predPop.members.map(m => new Net(m.g));
+      evalPredVsPanel(predPop.members, predNets, preyNets, rng, P);
+      evalPreyVsPanel(preyPop.members, preyNets, predNets, rng, P);
+    }
+    const qc = champ(preyPop.members);
+    const qnet = new Net(qc.g);
+    preyTrait.push(evasionAlignment(qnet));
+    preyProtean.push(proteanIndex(qnet));
+    predCatch.push(mode === 'control' ? (1 - qc.fit) : champ(predPop.members).fit);
+    complexity.push(qc.g.conns.filter(c => c.enabled).length);
+    if (P.keepChamps) {
+      preyChamps.push(qc.g.clone());
+      predChamps.push((mode === 'control' ? frozenPanel[gen % frozenPanel.length] : champ(predPop.members).g).clone());
+    }
+    reproduce(preyPop, rng);
+    if (mode !== 'control') reproduce(predPop, rng);
+  }
+  return { preyTrait, preyProtean, predCatch, predChamps, preyChamps, complexity };
+}
+
+/* ============================================================
+   STATISTICS
+   ============================================================ */
+function detrend(x) {                       // remove linear trend
+  const n = x.length; let sx = 0, sy = 0, sxx = 0, sxy = 0;
+  for (let i = 0; i < n; i++) { sx += i; sy += x[i]; sxx += i * i; sxy += i * x[i]; }
+  const d = n * sxx - sx * sx || 1;
+  const b = (n * sxy - sx * sy) / d, a = (sy - b * sx) / n;
+  return x.map((v, i) => v - (a + b * i));
+}
+function autocorr(x, lag) {
+  const n = x.length, m = x.reduce((s, v) => s + v, 0) / n;
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) den += (x[i] - m) ** 2;
+  for (let i = 0; i < n - lag; i++) num += (x[i] - m) * (x[i + lag] - m);
+  return den ? num / den : 0;
+}
+/* PRE-REGISTERED cyclicity statistic:
+   detrend the trait series, then take the deepest negative autocorrelation
+   trough over lags 1..L. A real oscillation puts a trough at ~half-period;
+   monotone convergence and random walk do not. Larger ⇒ more cyclic.       */
+function cyclicity(series, L) {
+  if (series.length < 6) return 0;
+  const d = detrend(series);
+  let minAC = 1;
+  const maxLag = Math.min(L, (series.length / 2) | 0);
+  for (let lag = 1; lag <= maxLag; lag++) minAC = Math.min(minAC, autocorr(d, lag));
+  return Math.max(0, -minAC);             // depth of the trough (0 if none)
+}
+/* permutation test on difference in means (two-sided) */
+function permTest(a, b, iters, seed) {
+  const rng = new RNG(seed);
+  const mean = arr => arr.reduce((s, v) => s + v, 0) / arr.length;
+  const obs = mean(a) - mean(b);
+  const pool = a.concat(b), na = a.length;
+  let ge = 0;
+  for (let it = 0; it < iters; it++) {
+    for (let i = pool.length - 1; i > 0; i--) { const j = rng.int(i + 1); const t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
+    let sa = 0; for (let i = 0; i < na; i++) sa += pool[i];
+    const diff = sa / na - (pool.reduce((s, v) => s + v, 0) - sa) / (pool.length - na);
+    if (Math.abs(diff) >= Math.abs(obs) - 1e-12) ge++;
+  }
+  return { obs, p: (ge + 1) / (iters + 1) };
+}
+function median(a) { const s = a.slice().sort((x, y) => x - y); const n = s.length; return n % 2 ? s[(n - 1) / 2] : (s[n / 2 - 1] + s[n / 2]) / 2; }
+function bootCI(a, iters, seed) {
+  const rng = new RNG(seed), means = [];
+  for (let it = 0; it < iters; it++) { let s = 0; for (let i = 0; i < a.length; i++) s += a[rng.int(a.length)]; means.push(s / a.length); }
+  means.sort((x, y) => x - y);
+  return [means[(0.025 * iters) | 0], means[(0.975 * iters) | 0]];
+}
+
+/* CIAO matrix for a single replicate (predator champ i vs prey champ j) */
+function ciao(predChamps, preyChamps, P, seed) {
+  const rng = new RNG(seed);
+  const G = predChamps.length, M = [];
+  const predNets = predChamps.map(g => new Net(g));
+  const preyNets = preyChamps.map(g => new Net(g));
+  for (let i = 0; i < G; i++) {
+    const row = new Float32Array(G);
+    for (let j = 0; j < G; j++) {
+      let s = 0; const E = 2;
+      for (let e = 0; e < E; e++) s += runEncounter(predNets[i], preyNets[j], rng.range(0, Math.PI * 2)).pred;
+      row[j] = s / E;
+    }
+    M.push(row);
+  }
+  // non-monotonicity: average sign-reversals along prey-generation axis per predator row
+  let rev = 0, cnt = 0;
+  for (let i = 0; i < G; i++) {
+    for (let j = 2; j < G; j++) {
+      const d1 = M[i][j - 1] - M[i][j - 2], d2 = M[i][j] - M[i][j - 1];
+      if (d1 * d2 < 0) rev++; cnt++;
+    }
+  }
+  return { M, intransitivity: cnt ? rev / cnt : 0 };
+}
+
+/* default parameters */
+const DEFAULT_P = {
+  pop: 22, opponents: 3, encounters: 1,
+  wMutRate: 0.8, wStep: 0.5, etaMutRate: 0.08,
+  addConn: 0.10, addNode: 0.035,
+  c1: 1.0, c3: 0.5, compatThresh: 1.4,
+  keepChamps: false
+};
+
+const API = {
+  RNG, clamp, Genome, Net, Innov, mutate, compat,
+  runEncounter, evasionAlignment, proteanIndex, Population,
+  evalPredVsPanel, evalPreyVsPanel, reproduce, harvestPredatorPanel,
+  runReplicate, cyclicity, permTest, median, bootCI, ciao, detrend, autocorr,
+  ENC, DEFAULT_P, NIN, NOUT, O0, H0
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = API;
+root.PRIMORDIUM = API;
+
+/* ============================================================
+   NODE CLI TEST HARNESS
+   ============================================================ */
+if (typeof require !== 'undefined' && require.main === module) {
+  const P = Object.assign({}, DEFAULT_P);
+  const gens = +(process.argv[2] || 50);
+  const reps = +(process.argv[3] || 8);
+  console.log(`# corrected design: ${reps} reps/condition, ${gens} gens, pop ${P.pop}`);
+  const t0 = Date.now();
+
+  // 1) harvest a frozen, competent predator panel from a warmup coevolution
+  const panel = harvestPredatorPanel(424242, gens, P, 8);
+  console.log(`[panel] harvested ${panel.length} competent predators (mean enabled conns ${(panel.reduce((s,g)=>s+g.conns.filter(c=>c.enabled).length,0)/panel.length).toFixed(1)})`);
+
+  // sanity: prey evolving vs the FIXED panel should raise prey fitness (real pressure, real learning)
+  (function sanity() {
+    const r = runReplicate(31, gens, P, 'control', panel);
+    const early = r.predCatch.slice(0,5).reduce((s,v)=>s+v,0)/5;
+    const late  = r.predCatch.slice(-5).reduce((s,v)=>s+v,0)/5;
+    console.log(`[sanity] control: predator catch on champ prey ${early.toFixed(3)} -> ${late.toFixed(3)} (prey should get harder to catch)`);
+  })();
+
+  const coevoCyc = [], ctrlCyc = [];
+  for (let r = 0; r < reps; r++) {
+    const co = runReplicate(1000 + r, gens, P, 'coevo');
+    const ct = runReplicate(5000 + r, gens, P, 'control', panel);
+    coevoCyc.push(cyclicity(co.preyTrait, 10));
+    ctrlCyc.push(cyclicity(ct.preyTrait, 10));
+    process.stdout.write(`rep ${r}: coevo ${coevoCyc[r].toFixed(3)} | ctrl ${ctrlCyc[r].toFixed(3)}\n`);
+  }
+  const pt = permTest(coevoCyc, ctrlCyc, 50000, 7);
+  console.log(`\ncoevo cyclicity  median ${median(coevoCyc).toFixed(3)}  95%CI ${bootCI(coevoCyc,5000,1).map(x=>x.toFixed(3))}`);
+  console.log(`ctrl  cyclicity  median ${median(ctrlCyc).toFixed(3)}  95%CI ${bootCI(ctrlCyc,5000,2).map(x=>x.toFixed(3))}`);
+  console.log(`PERMUTATION TEST  obs diff ${pt.obs.toFixed(3)}  p=${pt.p.toFixed(4)}  ${pt.p<0.05?'** reject null':'(fail to reject null)'}`);
+
+  const ex = runReplicate(99, gens, Object.assign({}, P, { keepChamps: true }), 'coevo');
+  const c = ciao(ex.predChamps, ex.preyChamps, P, 3);
+  console.log(`CIAO intransitivity (one coevo run): ${c.intransitivity.toFixed(3)}`);
+  console.log(`elapsed ${((Date.now()-t0)/1000).toFixed(1)}s`);
+}
+})(typeof self !== 'undefined' ? self : this);
+</script>
+<script>
+"use strict";
+const E = window.PRIMORDIUM;
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b)=>v<a?a:v>b?b:v;
+const sleep = ()=>new Promise(r=>setTimeout(r,0));
+const css = n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const COL = { phos:css('--phosphor'), amber:css('--amber'), blood:css('--blood'), bone:css('--bone'), dim:css('--phosphor-dim'), line:css('--line') };
+
+/* ---------- shared lineage (Arena + Brain) ---------- */
+const ARENA_GENS = 40;
+let WORLD = null;        // { predChamps, preyChamps, G }
+let activeTab = 'arena';
+
+function buildWorld(seed){
+  const P = Object.assign({}, E.DEFAULT_P, { keepChamps:true });
+  const rep = E.runReplicate(seed, ARENA_GENS, P, 'coevo');
+  WORLD = { predChamps: rep.predChamps, preyChamps: rep.preyChamps, G: rep.predChamps.length, seed };
+  const gmax = WORLD.G - 1;
+  for (const s of ['giSlider','gjSlider','brainGen']) { $(s).max = gmax; $(s).value = gmax; }
+  arena.gi = gmax; arena.gj = gmax;
+  $('giVal').textContent = gmax; $('gjVal').textContent = gmax; $('brainGenVal').textContent = gmax;
+  computeMatchup();
+  brain.dirty = true;
+}
+
+/* ============================================================ ARENA ============================================================ */
+const arenaCanvas = $('arena'), aCtx = arenaCanvas.getContext('2d');
+const arena = { gi:0, gj:0, trace:[], frame:0, playing:true, outcome:null, hold:0 };
+
+function avgPredFit(gi, gj, n){
+  let s=0; const rng=new E.RNG(99+gi*131+gj*17);
+  const pn=new E.Net(WORLD.predChamps[gi]), qn=new E.Net(WORLD.preyChamps[gj]);
+  for(let i=0;i<n;i++) s+=E.runEncounter(pn,qn,rng.range(0,Math.PI*2)).pred;
+  return s/n;
+}
+function computeMatchup(){
+  const gi=arena.gi, gj=arena.gj;
+  $('arGi').textContent=gi; $('arGj').textContent=gj;
+  const tr=[];
+  const r=E.runEncounter(new E.Net(WORLD.predChamps[gi]), new E.Net(WORLD.preyChamps[gj]), 0.6, tr);
+  arena.trace=tr; arena.frame=0; arena.outcome=r; arena.hold=0;
+  const T=E.ENC.T;
+  if(r.caughtAt>=0) $('arenaOutcome').innerHTML=`Outcome: <span class="c">predator catches prey</span> at step <b>${r.caughtAt}</b>/${T}.`;
+  else $('arenaOutcome').innerHTML=`Outcome: <span class="s">prey survives</span> all ${T} steps · mean gap <b>${(r.meanDist).toFixed(3)}</b>.`;
+  // intransitivity probe
+  const el=$('arenaIntr');
+  if(gi!==gj){
+    const o1=avgPredFit(gi,gj,3), o0=avgPredFit(gj,gj,3);
+    if(gi>gj && o1<o0-0.04)
+      el.textContent=`Note: the newer gen-${gi} predator does worse against gen-${gj} prey (${o1.toFixed(2)}) than the contemporaneous gen-${gj} predator did (${o0.toFixed(2)}). That is intransitivity — a hallmark of cycling.`;
+    else if(gi<gj && o1>o0+0.04)
+      el.textContent=`Note: this older predator beats newer prey better than expected — the lineages are not on one transitive ladder.`;
+    else el.textContent=`Cross-generation matchup (Δ=${gi-gj}). Move the dials further apart to hunt for intransitive pairs.`;
+  } else el.textContent='';
+}
+function heading(a,b){ let dx=b[0]-a[0],dy=b[1]-a[1];
+  if(dx>0.5)dx-=1;else if(dx<-0.5)dx+=1; if(dy>0.5)dy-=1;else if(dy<-0.5)dy+=1; return Math.atan2(dy,dx); }
+function drawShip(x,y,ang,kind,col,glow){
+  aCtx.save(); aCtx.translate(x,y); aCtx.rotate(ang);
+  if(glow){aCtx.shadowColor=col;aCtx.shadowBlur=14;}
+  aCtx.fillStyle=col; aCtx.beginPath();
+  if(kind==='prey'){ const r=8; aCtx.moveTo(r+4,0); aCtx.quadraticCurveTo(0,r,-r,0); aCtx.quadraticCurveTo(0,-r,r+4,0); }
+  else { const r=10; aCtx.moveTo(r+5,0); aCtx.lineTo(-r,r*.8); aCtx.lineTo(-r*.4,0); aCtx.lineTo(-r,-r*.8); }
+  aCtx.closePath(); aCtx.fill(); aCtx.restore();
+}
+function drawTrail(pts, idx, col){
+  aCtx.strokeStyle=col; aCtx.lineWidth=1.6; aCtx.globalAlpha=.5;
+  const W=arenaCanvas._w,H=arenaCanvas._h, start=Math.max(0,idx-46);
+  aCtx.beginPath(); let pen=false;
+  for(let k=start;k<=idx;k++){ const p=pts[k]; if(!p)continue; const x=p[0]*W,y=p[1]*H;
+    if(pen){ const q=pts[k-1]; if(Math.abs(p[0]-q[0])>0.5||Math.abs(p[1]-q[1])>0.5){aCtx.stroke();aCtx.beginPath();pen=false;} }
+    if(pen)aCtx.lineTo(x,y); else {aCtx.moveTo(x,y);pen=true;} }
+  aCtx.stroke(); aCtx.globalAlpha=1;
+}
+function renderArena(){
+  const W=arenaCanvas._w,H=arenaCanvas._h;
+  aCtx.fillStyle=css('--panel'); aCtx.fillRect(0,0,W,H);
+  aCtx.strokeStyle='rgba(141,242,174,0.045)'; aCtx.lineWidth=1;
+  for(let x=0;x<W;x+=56){aCtx.beginPath();aCtx.moveTo(x,0);aCtx.lineTo(x,H);aCtx.stroke();}
+  for(let y=0;y<H;y+=56){aCtx.beginPath();aCtx.moveTo(0,y);aCtx.lineTo(W,y);aCtx.stroke();}
+  const tr=arena.trace; if(!tr.length)return;
+  const i=Math.min(arena.frame|0, tr.length-1), f=tr[i];
+  const predTrail=tr.map(p=>[p[0],p[1]]), preyTrail=tr.map(p=>[p[2],p[3]]);
+  drawTrail(predTrail,i,'rgba(232,96,79,1)'); drawTrail(preyTrail,i,'rgba(141,242,174,1)');
+  const pPrev=tr[Math.max(0,i-1)];
+  const predAng=heading([pPrev[0],pPrev[1]],[f[0],f[1]]), preyAng=heading([pPrev[2],pPrev[3]],[f[2],f[3]]);
+  drawShip(f[2]*W,f[3]*H,preyAng,'prey',COL.phos,true);
+  drawShip(f[0]*W,f[1]*H,predAng,'pred',COL.blood,true);
+  // capture flash
+  if(arena.outcome && arena.outcome.caughtAt>=0 && i>=tr.length-1){
+    aCtx.strokeStyle='rgba(232,96,79,'+(0.5+0.5*Math.sin(Date.now()/120))+')';
+    aCtx.lineWidth=2; aCtx.beginPath(); aCtx.arc(f[0]*W,f[1]*H,20,0,Math.PI*2); aCtx.stroke();
+  }
+}
+function stepArena(){
+  if(!arena.trace.length)return;
+  if(arena.playing){
+    arena.frame+=2.2;
+    if(arena.frame>=arena.trace.length-1){ arena.hold++; if(arena.hold>45){arena.frame=0;arena.hold=0;} }
+  }
+  renderArena();
+}
+
+/* ============================================================ BRAIN ============================================================ */
+const brainCanvas=$('brainCanvas'), bCtx=brainCanvas.getContext('2d');
+const brain={ net:null, genome:null, pos:null, t:0, dirty:true };
+const IN_LABELS=['bias','sin∠','cos∠','prox','spd','sinψ','cosψ'], OUT_LABELS=['turn','thrust'];
+
+function buildBrain(){
+  const who=$('brainWho').value, gen=+$('brainGen').value;
+  const g=(who==='prey'?WORLD.preyChamps:WORLD.predChamps)[gen];
+  brain.genome=g; brain.net=new E.Net(g);
+  // layout
+  const W=brainCanvas._w,H=brainCanvas._h, pos=new Map();
+  const ins=g.nodes.filter(n=>n.type==='in').sort((a,b)=>a.id-b.id);
+  const outs=g.nodes.filter(n=>n.type==='out').sort((a,b)=>a.id-b.id);
+  const hid=g.nodes.filter(n=>n.type==='hid').sort((a,b)=>a.id-b.id);
+  ins.forEach((n,k)=>pos.set(n.id,{x:W*0.10,y:H*(k+1)/(ins.length+1)}));
+  outs.forEach((n,k)=>pos.set(n.id,{x:W*0.90,y:H*(k+1)/(outs.length+1)}));
+  hid.forEach((n,k)=>{ const fx=(k+1)/(hid.length+1); pos.set(n.id,{x:W*(0.32+0.36*fx),y:H*(0.5+0.34*Math.sin(k*1.7))}); });
+  brain.pos=pos;
+  const enabled=g.conns.filter(c=>c.enabled);
+  $('brainStats').innerHTML=
+    `nodes <b>${g.nodes.length}</b> &nbsp; synapses <b>${enabled.length}</b><br>`+
+    `hidden units <b>${hid.length}</b><br>`+
+    `recurrent / loop edges <b>${enabled.filter(c=>c.from>=c.to).length}</b><br>`+
+    `plastic synapses <b>${enabled.filter(c=>Math.abs(c.eta)>1e-4).length}</b> (max |η| ${Math.max(0,...enabled.map(c=>Math.abs(c.eta))).toFixed(3)})`;
+  brain.dirty=false;
+}
+function renderBrain(){
+  if(!WORLD)return;
+  if(brain.dirty)buildBrain();
+  const W=brainCanvas._w,H=brainCanvas._h, g=brain.genome, pos=brain.pos, net=brain.net;
+  bCtx.fillStyle=css('--panel'); bCtx.fillRect(0,0,W,H);
+  // drive a slowly circling probe so activations pulse
+  brain.t+=0.03; const bearing=Math.sin(brain.t)*2.2;
+  const buf=new Float32Array(E.NIN);
+  buf[0]=1;buf[1]=Math.sin(bearing);buf[2]=Math.cos(bearing);buf[3]=0.5+0.3*Math.sin(brain.t*0.7);buf[4]=0.6;buf[5]=Math.sin(Math.PI);buf[6]=Math.cos(Math.PI);
+  net.step(buf,0);
+  // edges
+  for(const c of g.conns){ if(!c.enabled)continue; const a=pos.get(c.from),b=pos.get(c.to); if(!a||!b)continue;
+    const recur=c.from>=c.to, plastic=Math.abs(c.eta)>1e-4;
+    bCtx.strokeStyle = c.w>=0 ? `rgba(141,242,174,${clamp(Math.abs(c.w)/4,.12,.8)})` : `rgba(232,96,79,${clamp(Math.abs(c.w)/4,.12,.8)})`;
+    bCtx.lineWidth=clamp(Math.abs(c.w)*0.9,.5,3); bCtx.setLineDash(recur?[3,4]:[]);
+    if(c.from===c.to){ bCtx.beginPath(); bCtx.arc(a.x+14,a.y,12,0,Math.PI*2); bCtx.stroke(); }
+    else { bCtx.beginPath(); bCtx.moveTo(a.x,a.y);
+      const mx=(a.x+b.x)/2, my=(a.y+b.y)/2+(recur?28:0); bCtx.quadraticCurveTo(mx,my,b.x,b.y); bCtx.stroke(); }
+    if(plastic){ const mx=(a.x+b.x)/2,my=(a.y+b.y)/2; bCtx.setLineDash([]); bCtx.strokeStyle='rgba(255,255,255,.7)'; bCtx.lineWidth=1; bCtx.beginPath(); bCtx.arc(mx,my,2.6,0,Math.PI*2); bCtx.stroke(); }
+  }
+  bCtx.setLineDash([]);
+  // nodes
+  bCtx.font='9px IBM Plex Mono';
+  for(const n of g.nodes){ const p=pos.get(n.id); if(!p)continue; const idx=net.index.get(n.id);
+    const a=idx!==undefined?net.act[idx]:0;
+    bCtx.fillStyle = a>=0 ? `rgb(${30+a*111|0},${50+a*192|0},${40+a*134|0})` : `rgb(${50-a*182|0},${30-a*66|0},${28-a*51|0})`;
+    bCtx.beginPath(); bCtx.arc(p.x,p.y,7,0,Math.PI*2); bCtx.fill();
+    bCtx.strokeStyle=COL.line; bCtx.lineWidth=1; bCtx.stroke();
+    if(n.type==='in'){ bCtx.fillStyle='#7c856f'; bCtx.textAlign='right'; bCtx.fillText(IN_LABELS[n.id]||('in'+n.id), p.x-11, p.y+3); }
+    if(n.type==='out'){ bCtx.fillStyle='#7c856f'; bCtx.textAlign='left'; bCtx.fillText(OUT_LABELS[n.id-E.O0]||('o'+n.id), p.x+11, p.y+3); }
+  }
+}
+
+/* ============================================================ LABORATORY ============================================================ */
+let lab={ running:false };
+function setProg(frac,label){ $('progBar').style.width=(frac*100)+'%'; $('progLabel').textContent=label; }
+function sizeCard(c,h){ const dpr=Math.min(devicePixelRatio||1,2); c.style.height=h+'px'; c.width=c.clientWidth*dpr; c.height=h*dpr; const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); c._w=c.clientWidth; c._h=h; return x; }
+
+async function runExperiment(){
+  if(lab.running)return; lab.running=true;
+  const btn=$('runExp'); btn.disabled=true; btn.textContent='running…';
+  $('labPlaceholder').style.display='none'; $('progWrap').style.display='flex';
+  const gens=clamp(+$('genInput').value||45,20,120), reps=clamp(+$('repInput').value||8,3,24);
+  const P=Object.assign({}, E.DEFAULT_P);
+  const totalSteps=1+reps*2+1; let step=0;
+  setProg(0,'harvesting frozen predator panel…'); await sleep(); await sleep();
+  const panel=E.harvestPredatorPanel(424242,gens,P,8); step++; setProg(step/totalSteps,'panel ready · running replicates'); await sleep();
+  const coevoCyc=[], ctrlCyc=[]; let firstCo=null, firstCt=null;
+  for(let r=0;r<reps;r++){
+    const co=E.runReplicate(1000+r,gens,P,'coevo'); coevoCyc.push(E.cyclicity(co.preyTrait,10)); if(r===0)firstCo=co;
+    step++; setProg(step/totalSteps,`coevolution replicate ${r+1}/${reps}`); await sleep();
+    const ct=E.runReplicate(5000+r,gens,P,'control',panel); ctrlCyc.push(E.cyclicity(ct.preyTrait,10)); if(r===0)firstCt=ct;
+    step++; setProg(step/totalSteps,`control replicate ${r+1}/${reps}`); await sleep();
+  }
+  setProg(step/totalSteps,'building CIAO tournament…'); await sleep();
+  const ex=E.runReplicate(99,gens,Object.assign({},P,{keepChamps:true}),'coevo');
+  const cia=E.ciao(ex.predChamps,ex.preyChamps,P,3); step++; setProg(1,'computing statistics…'); await sleep();
+  const pt=E.permTest(coevoCyc,ctrlCyc,20000,7);
+  const coMed=E.median(coevoCyc), ctMed=E.median(ctrlCyc);
+  const coCI=E.bootCI(coevoCyc,4000,1), ctCI=E.bootCI(ctrlCyc,4000,2);
+  renderResults({gens,reps,coevoCyc,ctrlCyc,firstCo,firstCt,cia,pt,coMed,ctMed,coCI,ctCI});
+  $('progWrap').style.display='none'; btn.disabled=false; btn.textContent='▶ Run again'; lab.running=false;
+}
+
+function renderResults(R){
+  $('labResults').style.display='flex';
+  // verdict
+  const v=$('verdict'); const sig=R.pt.p<0.05; const dir=R.coMed>R.ctMed;
+  let title, body, cls;
+  if(sig && dir){ cls=''; title='Consistent with <em>Red Queen cycling</em>';
+    body=`Coevolving prey show significantly more strategy oscillation than prey adapting to a frozen target. The moving opponent appears to keep the strategy in motion.`; }
+  else if(sig && !dir){ cls='null'; title='Opposite of H1 — control cycled <em>more</em>';
+    body=`An unexpected, honest result: the converging control oscillated more than coevolution by this measure. Worth investigating, not glossing over.`; }
+  else { cls='null'; title='No cycling detected <em>beyond control</em>';
+    body=`We fail to reject the null: by the 1-D trait measure, coevolution does not oscillate more than directed convergence. Yet the CIAO matrix shows intransitivity ${R.cia.intransitivity.toFixed(2)} — suggesting non-progressive dynamics a single trait can miss. This pattern (cycling visible in dominance, not in a scalar) and outright "mediocre stable states" are both well documented (Ficici & Pollack).`; }
+  v.className='verdict'+(cls?' '+cls:'');
+  v.innerHTML=`<div class="lab">Verdict — computed from this run</div><div class="big">${title}</div><p>${body}</p>`+
+    `<div class="statline"><span>coevo cyclicity <b>${R.coMed.toFixed(3)}</b> <span style="color:#5d6657">[${R.coCI[0].toFixed(2)},${R.coCI[1].toFixed(2)}]</span></span>`+
+    `<span>control <b>${R.ctMed.toFixed(3)}</b> <span style="color:#5d6657">[${R.ctCI[0].toFixed(2)},${R.ctCI[1].toFixed(2)}]</span></span>`+
+    `<span>permutation <b>p=${R.pt.p.toFixed(3)}</b></span><span>CIAO intransitivity <b>${R.cia.intransitivity.toFixed(3)}</b></span>`+
+    `<span>${R.reps} reps · ${R.gens} gens</span></div>`;
+  // trajectory chart
+  const t=sizeCard($('trajChart'),160), W=$('trajChart')._w, H=160;
+  t.clearRect(0,0,W,H); const pad=8;
+  const line=(arr,col)=>{ t.strokeStyle=col;t.lineWidth=1.6;t.beginPath();
+    arr.forEach((y,i)=>{const X=pad+i/(arr.length-1)*(W-2*pad);const Y=H/2-y*(H/2-pad);i?t.lineTo(X,Y):t.moveTo(X,Y);});t.stroke(); };
+  t.strokeStyle='rgba(216,210,194,.12)';t.beginPath();t.moveTo(pad,H/2);t.lineTo(W-pad,H/2);t.stroke();
+  line(R.firstCt.preyTrait,COL.amber); line(R.firstCo.preyTrait,COL.phos);
+  // cyclicity dots
+  const c=sizeCard($('cycChart'),160), CW=$('cycChart')._w;
+  c.clearRect(0,0,CW,160); const mx=Math.max(0.35,...R.coevoCyc,...R.ctrlCyc);
+  const colX=[CW*0.3,CW*0.7], rng=new E.RNG(5);
+  const plotCol=(arr,x,col,med)=>{ arr.forEach(val=>{ const jx=x+(rng.next()-0.5)*46, y=150-val/mx*135;
+      c.fillStyle=col; c.globalAlpha=.8; c.beginPath();c.arc(jx,y,3.2,0,Math.PI*2);c.fill();c.globalAlpha=1; });
+    const my=150-med/mx*135; c.strokeStyle=col;c.lineWidth=2;c.beginPath();c.moveTo(x-34,my);c.lineTo(x+34,my);c.stroke();
+    c.fillStyle='#7c856f';c.font='10px IBM Plex Mono';c.textAlign='center';c.fillText(med.toFixed(2),x,148); };
+  plotCol(R.coevoCyc,colX[0],COL.phos,R.coMed); plotCol(R.ctrlCyc,colX[1],COL.amber,R.ctMed);
+  c.fillStyle='#7c856f';c.fillText('coevo',colX[0],16);c.fillText('control',colX[1],16);
+  // CIAO heatmap
+  const G=R.cia.M.length, side=Math.min($('ciaoChart').clientWidth,300);
+  const h=sizeCard($('ciaoChart'),side), HW=$('ciaoChart')._w, off=(HW-side)/2, cell=side/G;
+  h.clearRect(0,0,HW,side);
+  for(let i=0;i<G;i++)for(let j=0;j<G;j++){ const val=R.cia.M[i][j];
+    h.fillStyle=`rgb(${12+val*129|0},${18+val*224|0},${14+val*160|0})`;
+    h.fillRect(off+j*cell,i*cell,cell+.5,cell+.5); }
+  h.strokeStyle='rgba(232,179,75,.25)';h.lineWidth=1;h.beginPath();h.moveTo(off,0);h.lineTo(off+side,side);h.stroke();
+  $('ciaoScore').textContent=R.cia.intransitivity.toFixed(3);
+  // monograph live line
+  $('monoResult').innerHTML=`<b style="color:var(--phosphor)">Last run (${R.reps} replicates × ${R.gens} generations):</b> `+
+    `coevolution cyclicity ${R.coMed.toFixed(3)} (95% CI ${R.coCI[0].toFixed(2)}–${R.coCI[1].toFixed(2)}), `+
+    `control ${R.ctMed.toFixed(3)} (${R.ctCI[0].toFixed(2)}–${R.ctCI[1].toFixed(2)}); permutation p=${R.pt.p.toFixed(3)}; `+
+    `CIAO intransitivity ${R.cia.intransitivity.toFixed(3)}. `+
+    (R.pt.p<0.05 ? (R.coMed>R.ctMed?'Reject H0 in the predicted direction.':'Reject H0 — but opposite to H1.') : 'Fail to reject H0 on the primary trait measure.');
+}
+
+/* ============================================================ PLUMBING ============================================================ */
+function sizeStage(c){ const r=c.parentElement.getBoundingClientRect(); const dpr=Math.min(devicePixelRatio||1,2);
+  c.width=r.width*dpr; c.height=r.height*dpr; c.getContext('2d').setTransform(dpr,0,0,dpr,0,0); c._w=r.width; c._h=r.height; }
+function resizeActive(){ if(activeTab==='arena')sizeStage(arenaCanvas); if(activeTab==='brain'){sizeStage(brainCanvas);brain.dirty=true;} }
+window.addEventListener('resize',resizeActive);
+
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  activeTab=b.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='tab-'+activeTab));
+  requestAnimationFrame(resizeActive);
+});
+
+// arena controls
+$('giSlider').oninput=e=>{ arena.gi=+e.target.value; $('giVal').textContent=arena.gi; if($('lockDiag').checked){arena.gj=arena.gi;$('gjSlider').value=arena.gi;$('gjVal').textContent=arena.gi;} computeMatchup(); };
+$('gjSlider').oninput=e=>{ arena.gj=+e.target.value; $('gjVal').textContent=arena.gj; if($('lockDiag').checked){arena.gi=arena.gj;$('giSlider').value=arena.gj;$('giVal').textContent=arena.gj;} computeMatchup(); };
+$('playPause').onclick=()=>{ arena.playing=!arena.playing; $('playPause').textContent=arena.playing?'Pause':'Play'; };
+$('newWorld').onclick=()=>{ $('newWorld').disabled=true; $('newWorld').textContent='evolving…';
+  setTimeout(()=>{ buildWorld((Math.random()*1e9)|0); $('newWorld').disabled=false; $('newWorld').textContent='⟳ New lineage'; },30); };
+// brain controls
+$('brainWho').onchange=()=>{brain.dirty=true;}; $('brainGen').oninput=e=>{ $('brainGenVal').textContent=e.target.value; brain.dirty=true; };
+// lab
+$('runExp').onclick=runExperiment;
+
+/* master animation loop */
+function tick(){ if(activeTab==='arena')stepArena(); else if(activeTab==='brain')renderBrain(); requestAnimationFrame(tick); }
+
+/* boot */
+(function boot(){
+  let d=0; const dotsEl=$('splashDots'); const di=setInterval(()=>{d=(d+1)%4; dotsEl.textContent=['◦ ◦ ◦','● ◦ ◦','● ● ◦','● ● ●'][d];},180);
+  setTimeout(()=>{
+    sizeStage(arenaCanvas);
+    buildWorld(20260612);
+    clearInterval(di); $('splash').style.display='none';
+    requestAnimationFrame(tick);
+  },60);
+})();
+</script>
+</body></html>
